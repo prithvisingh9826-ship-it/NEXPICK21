@@ -1,0 +1,211 @@
+// ============================================================
+// NexPick Data Backend — products, channels, brand colors
+// ============================================================
+
+var BRAND_COLORS = {
+  "boAt":      {bg:"#FF6B35",fg:"#fff"},
+  "Realme":    {bg:"#FACC15",fg:"#111"},
+  "JBL":       {bg:"#E30000",fg:"#fff"},
+  "OnePlus":   {bg:"#F5010C",fg:"#fff"},
+  "Nothing":   {bg:"#EEEEEE",fg:"#111"},
+  "CMF":       {bg:"#EEEEEE",fg:"#111"},
+  "Samsung":   {bg:"#1428A0",fg:"#fff"},
+  "Sony":      {bg:"#111111",fg:"#fff"},
+  "Apple":     {bg:"#555555",fg:"#fff"},
+  "Bose":      {bg:"#1C1C1C",fg:"#C8A86D"},
+  "Redmi":     {bg:"#FF6900",fg:"#fff"},
+  "Xiaomi":    {bg:"#FF6900",fg:"#fff"},
+  "Motorola":  {bg:"#5961FF",fg:"#fff"},
+  "vivo":      {bg:"#425AEA",fg:"#fff"},
+  "iQOO":      {bg:"#2200FF",fg:"#fff"},
+  "Google":    {bg:"#4285F4",fg:"#fff"},
+  "Lenovo":    {bg:"#E0162B",fg:"#fff"},
+  "Acer":      {bg:"#6EB22F",fg:"#fff"},
+  "HP":        {bg:"#0096D6",fg:"#fff"},
+  "ASUS":      {bg:"#00539B",fg:"#fff"},
+  "Asus":      {bg:"#00539B",fg:"#fff"},
+  "Dell":      {bg:"#007DB8",fg:"#fff"},
+  "iPhone":    {bg:"#555555",fg:"#fff"},
+  "MacBook":   {bg:"#555555",fg:"#fff"},
+  "Jabra":     {bg:"#008A00",fg:"#fff"},
+  "Sennheiser":{bg:"#222222",fg:"#fff"},
+  "Marshall":  {bg:"#2C2206",fg:"#FFD700"},
+  "Bang":      {bg:"#111111",fg:"#C8A86D"},
+  "pTron":     {bg:"#7B2D8B",fg:"#fff"},
+  "Noise":     {bg:"#FF3B3B",fg:"#fff"},
+  "OPPO":      {bg:"#1F5EFF",fg:"#fff"},
+  "Poco":      {bg:"#FFC107",fg:"#111"},
+  "LG":        {bg:"#A50034",fg:"#fff"},
+  "MSI":       {bg:"#CC0000",fg:"#fff"},
+  "Razer":     {bg:"#00D25B",fg:"#111"},
+  "Microsoft": {bg:"#F25022",fg:"#fff"},
+  "Alienware": {bg:"#0EF4FF",fg:"#111"}
+};
+
+// ============================================================
+// EARBUDS — 40 products (₹599 → ₹89,990)
+// ============================================================
+var EARBUDS = [
+  {name:"pTron Bassbuds B10",         price:599,   perf:5.5, battery:7.0, spec:"TWS | 16H Playback | IPX4 | BT 5.1 | Type-C Charging",                           link:"https://www.ptron.in"},
+  {name:"Noise Buds VS303",           price:1099,  perf:6.0, battery:7.5, spec:"TWS | 24H Playback | IPX5 | AI ENC | Instacharge 10min=150min",                   link:"https://www.gonoise.com"},
+  {name:"boAt Airdopes 141",          price:1299,  perf:6.5, battery:8.5, spec:"TWS | 42H Playback | IPX4 | Instant Play | BT 5.0",                               link:"https://www.boat-lifestyle.com"},
+  {name:"Redmi Buds 5",               price:1499,  perf:6.5, battery:8.0, spec:"TWS | ANC | 40H Playback | IP54 | BT 5.3 | 12.4mm Driver",                       link:"https://www.mi.com/in"},
+  {name:"Realme Buds T100",           price:1499,  perf:6.5, battery:7.5, spec:"TWS | 28H Playback | AI ENC | Bass Boost+ | BT 5.3",                             link:"https://www.realme.com/in"},
+  {name:"boAt Airdopes 181",          price:1799,  perf:7.0, battery:9.0, spec:"TWS | 50H Playback | IPX5 | 10mm Driver | Instant Play",                         link:"https://www.boat-lifestyle.com"},
+  {name:"Realme Buds T300",           price:2199,  perf:7.0, battery:8.0, spec:"TWS | ANC | 40H Playback | 13.6mm Driver | BT 5.3",                              link:"https://www.realme.com/in"},
+  {name:"JBL Wave Flex",              price:2799,  perf:7.0, battery:8.0, spec:"TWS | JBL Deep Bass | 32H | IPX5 | Speed Charge 10min=1H",                       link:"https://in.jbl.com"},
+  {name:"OnePlus Nord Buds 2r",       price:2699,  perf:7.5, battery:8.5, spec:"TWS | ANC | 38H | IP55 | Fast Pair | BT 5.3 | 12.4mm",                          link:"https://www.oneplus.com/in"},
+  {name:"OPPO Enco Air 3 Pro",        price:3499,  perf:7.5, battery:8.0, spec:"TWS | ANC | 44H | IP55 | LHDC 5 | 12.4mm Driver",                               link:"https://www.oppo.com/in"},
+  {name:"CMF Buds Pro 2",             price:3499,  perf:8.0, battery:9.0, spec:"TWS | ANC 45dB | 43H | IP55 | 11mm Titanium Driver | BT 5.3",                   link:"https://in.nothing.tech"},
+  {name:"boAt Airdopes 800",          price:3999,  perf:7.5, battery:9.0, spec:"TWS | ANC | 50H | IPX5 | Quad Mic ENC | 11mm Driver",                           link:"https://www.boat-lifestyle.com"},
+  {name:"Noise Cancellation Pro 5",   price:4299,  perf:7.5, battery:8.5, spec:"TWS | ANC | 45H | IPX5 | Hyper Sync | Wind Guard Mic",                          link:"https://www.gonoise.com"},
+  {name:"OnePlus Nord Buds 3 Pro",    price:4999,  perf:8.0, battery:9.0, spec:"TWS | ANC | 44H | IP55 | 12.4mm Driver | BT 5.3",                               link:"https://www.oneplus.com/in"},
+  {name:"Samsung Galaxy Buds FE",     price:4999,  perf:8.0, battery:7.5, spec:"TWS | ANC | 30H | IPX2 | 3-Mic ENC | One-Side Use",                             link:"https://www.samsung.com/in"},
+  {name:"Nothing Ear (a)",            price:5999,  perf:8.5, battery:8.5, spec:"TWS | ANC 45dB | 42.3H | IP54 | Dirac Tuned | ChatGPT",                        link:"https://in.nothing.tech"},
+  {name:"Jabra Elite 4",              price:6999,  perf:8.0, battery:8.0, spec:"TWS | ANC | 28H | IP55 | Multipoint Connect | Spotify Tap",                     link:"https://www.jabra.in"},
+  {name:"JBL Live Buds 3",            price:7999,  perf:8.0, battery:8.5, spec:"TWS | ANC | 55H | IPX5 | Smart Ambient | Speed Charge",                        link:"https://in.jbl.com"},
+  {name:"OnePlus Buds Pro 2",         price:9999,  perf:8.5, battery:8.5, spec:"TWS | ANC 48dB | 39H | IP55 | 3-Mic | LHDC 5 | 11mm",                         link:"https://www.oneplus.com/in"},
+  {name:"Nothing Ear (2)",            price:8999,  perf:9.0, battery:8.0, spec:"TWS | ANC | 36H | IP54 | Hi-Res Audio | Dual Connect | PEQ",                   link:"https://in.nothing.tech"},
+  {name:"Sony WF-C700N",              price:9990,  perf:8.5, battery:7.5, spec:"TWS | ANC | 15H | IPX4 | Hi-Res | DSEE | BT 5.2",                              link:"https://www.sony.co.in"},
+  {name:"Marshall Minor IV",          price:12990, perf:8.5, battery:9.5, spec:"TWS | 35H | Wireless Charging | IPX5 | Multi-Point | Signature Sound",          link:"https://www.marshallheadphones.com"},
+  {name:"Jabra Elite 10",             price:14999, perf:9.0, battery:8.0, spec:"TWS | Adjustable ANC | 36H | IP57 | Dolby Head Tracking | MultiSensor",        link:"https://www.jabra.in"},
+  {name:"Samsung Galaxy Buds2 Pro",   price:13999, perf:8.5, battery:7.5, spec:"TWS | ANC | 29H | IPX7 | 360 Audio | 24bit Hi-Fi | 3-Mic",                    link:"https://www.samsung.com/in"},
+  {name:"Apple AirPods 3rd Gen",      price:19900, perf:8.5, battery:8.0, spec:"TWS | Spatial Audio | 30H | IPX4 | Adaptive EQ | Lightning/USB-C",              link:"https://www.apple.com/in"},
+  {name:"Sony WF-1000XM4",            price:17990, perf:9.0, battery:8.0, spec:"TWS | Industry-Leading ANC | 36H | IPX4 | Hi-Res | LDAC",                     link:"https://www.sony.co.in"},
+  {name:"Sennheiser Momentum TW 3",   price:19990, perf:9.0, battery:7.5, spec:"TWS | ANC | 28H | IPX4 | Transparent Hearing | aptX Adaptive",                 link:"https://www.sennheiser.com"},
+  {name:"Bose QC Earbuds II",         price:22990, perf:9.5, battery:7.0, spec:"TWS | World-Class ANC | 24H | IPX4 | CustomTune Tech",                         link:"https://www.bose.in"},
+  {name:"Apple AirPods Pro 2",        price:24900, perf:9.5, battery:8.5, spec:"TWS | Adaptive ANC | 30H | MagSafe/USB-C | H2 Chip | USB-C",                  link:"https://www.apple.com/in"},
+  {name:"Sony WF-1000XM5",            price:24990, perf:9.5, battery:8.0, spec:"TWS | ANC | 36H | Hi-Res | V1 Chip | LDAC | IP54 | 8.4mm",                    link:"https://www.sony.co.in"},
+  {name:"JBL Tour One M2",            price:19999, perf:8.5, battery:9.0, spec:"Over-Ear | ANC | 50H | Multi-Point | Foldable | BT 5.3",                       link:"https://in.jbl.com"},
+  {name:"Bose QuietComfort 45",       price:29990, perf:9.0, battery:9.0, spec:"Over-Ear | ANC | 24H | Multipoint | TriPort Acoustic | Light",                  link:"https://www.bose.in"},
+  {name:"Sony WH-1000XM5",            price:28990, perf:9.5, battery:9.0, spec:"Over-Ear | ANC | 40H | Hi-Res | Multipoint | LDAC | 30min Quick",              link:"https://www.sony.co.in"},
+  {name:"Sennheiser Momentum 4",      price:34990, perf:9.5, battery:9.5, spec:"Over-Ear | ANC | 60H | aptX Adaptive | Transparent Hearing | Foldable",        link:"https://www.sennheiser.com"},
+  {name:"Apple AirPods Max",          price:59900, perf:9.5, battery:8.5, spec:"Over-Ear | ANC | 20H | Spatial Audio | H1 Chip | Knit Mesh | USB-C",           link:"https://www.apple.com/in"},
+  {name:"Bose QC Ultra Headphones",   price:69990, perf:9.8, battery:9.0, spec:"Over-Ear | Best ANC | 24H | Immersive Audio | World-Class Comfort",             link:"https://www.bose.in"},
+  {name:"Sony WH-1000XM5 Signature",  price:89990, perf:9.9, battery:9.5, spec:"Over-Ear | ANC | 40H | Hi-Res | LDAC | Limited Edition Gold",                  link:"https://www.sony.co.in"},
+  {name:"Bang & Olufsen Beoplay H95", price:89990, perf:9.9, battery:9.0, spec:"Over-Ear | ANC | 38H | Lambskin Leather | Aluminium | 4-Mic Array",            link:"https://www.bang-olufsen.com"}
+];
+
+// ============================================================
+// PHONES — 42 products (₹6,499 → ₹1,79,999)
+// ============================================================
+var PHONES = [
+  {name:"Redmi A3",                   price:6499,   perf:6.0, battery:8.0, camera:6.0, spec:"Helio G36 | 3GB+64GB | 8MP | 5000mAh | 6.71\" HD+ | BT 5.1",                       link:"https://www.mi.com/in"},
+  {name:"Samsung Galaxy A05",         price:7499,   perf:6.5, battery:8.0, camera:7.0, spec:"Helio G85 | 4GB+64GB | 50MP | 5000mAh | 6.7\" FHD | 25W Charge",                    link:"https://www.samsung.com/in"},
+  {name:"Redmi 14C",                  price:8499,   perf:6.5, battery:8.5, camera:7.0, spec:"Helio G85 | 4GB+128GB | 50MP | 5160mAh | 6.88\" HD+ | MediaTek",                    link:"https://www.mi.com/in"},
+  {name:"Poco M6 Pro 5G",             price:12999,  perf:7.0, battery:8.5, camera:7.5, spec:"Dimensity 6080 | 6GB+128GB | 50MP | 5000mAh | 6.67\" FHD+ 90Hz | 18W",             link:"https://www.poco.net/in"},
+  {name:"Samsung Galaxy M15 5G",      price:11999,  perf:7.0, battery:9.0, camera:7.0, spec:"Dimensity 6100+ | 4GB+128GB | 50MP | 6000mAh | 6.5\" AMOLED 90Hz | 25W",           link:"https://www.samsung.com/in"},
+  {name:"Redmi Note 13 5G",           price:13999,  perf:7.0, battery:8.0, camera:8.0, spec:"Snapdragon 685 | 6GB+128GB | 100MP | 5000mAh | 6.67\" AMOLED 120Hz | 33W",         link:"https://www.mi.com/in"},
+  {name:"vivo T3 5G",                 price:14999,  perf:7.5, battery:9.0, camera:7.5, spec:"Dimensity 7200 | 8GB+128GB | 50MP | 5000mAh | 6.67\" AMOLED 120Hz | 44W",          link:"https://www.vivo.com/in"},
+  {name:"Motorola Edge 50 Fusion",    price:17999,  perf:8.0, battery:8.5, camera:8.5, spec:"Snapdragon 7s Gen 2 | 8GB+256GB | 50MP OIS | 5000mAh | 6.7\" pOLED 144Hz | 68W",  link:"https://www.motorola.in"},
+  {name:"Samsung Galaxy M35 5G",      price:19999,  perf:7.5, battery:9.0, camera:8.0, spec:"Exynos 1380 | 6GB+128GB | 50MP OIS | 6000mAh | 6.6\" AMOLED 120Hz | 25W",         link:"https://www.samsung.com/in"},
+  {name:"Redmi Note 14 Pro 5G",       price:19999,  perf:8.0, battery:8.5, camera:9.0, spec:"Dimensity 7300 Ultra | 8GB+256GB | 200MP | 5500mAh | 6.67\" AMOLED 120Hz | 45W",  link:"https://www.mi.com/in"},
+  {name:"Poco X6 Pro",                price:22999,  perf:8.5, battery:8.5, camera:8.0, spec:"Dimensity 8300 Ultra | 8GB+256GB | 64MP | 5000mAh | 6.67\" AMOLED 144Hz | 67W",   link:"https://www.poco.net/in"},
+  {name:"OnePlus Nord CE4",           price:24999,  perf:8.5, battery:8.0, camera:8.0, spec:"Snapdragon 7s Gen 2 | 8GB+256GB | 50MP | 5500mAh | 6.7\" AMOLED 120Hz | 100W",   link:"https://www.oneplus.com/in"},
+  {name:"Realme GT 6T",               price:26999,  perf:8.5, battery:8.5, camera:8.5, spec:"Snapdragon 7s Gen 3 | 8GB+256GB | 50MP | 5500mAh | 6.78\" AMOLED 120Hz | 120W",  link:"https://www.realme.com/in"},
+  {name:"OPPO Reno 12",               price:26999,  perf:8.0, battery:8.5, camera:9.0, spec:"Dimensity 7300 Energy | 8GB+256GB | 50MP AI | 5000mAh | 6.7\" AMOLED 120Hz",      link:"https://www.oppo.com/in"},
+  {name:"iQOO Z9s Pro",               price:27999,  perf:8.5, battery:9.0, camera:8.5, spec:"Dimensity 8300 | 8GB+256GB | 50MP | 5500mAh | 6.77\" AMOLED 144Hz | 44W",        link:"https://www.iqoo.com/in"},
+  {name:"Poco F6",                    price:29999,  perf:9.0, battery:8.5, camera:8.5, spec:"Snapdragon 8s Gen 3 | 8GB+256GB | 50MP OIS | 4500mAh | 6.67\" AMOLED 144Hz | 90W",link:"https://www.poco.net/in"},
+  {name:"Samsung Galaxy A55 5G",      price:32999,  perf:8.5, battery:8.0, camera:9.0, spec:"Exynos 1480 | 8GB+128GB | 50MP OIS | 5000mAh | 6.6\" AMOLED 120Hz | Gorilla 7",  link:"https://www.samsung.com/in"},
+  {name:"OPPO Reno 12 Pro",           price:36999,  perf:8.5, battery:8.5, camera:9.0, spec:"Dimensity 7300 Energy | 12GB+256GB | 50MP AI | 5000mAh | 6.7\" AMOLED 120Hz",    link:"https://www.oppo.com/in"},
+  {name:"vivo V40 Pro",               price:39999,  perf:8.5, battery:8.5, camera:9.5, spec:"Snapdragon 7 Gen 3 | 8GB+256GB | 50MP Zeiss | 5500mAh | 6.78\" AMOLED 120Hz",    link:"https://www.vivo.com/in"},
+  {name:"OnePlus 12R",                price:39999,  perf:9.0, battery:9.0, camera:8.5, spec:"Snapdragon 8 Gen 2 | 8GB+128GB | 50MP | 5500mAh 100W | 6.78\" AMOLED 120Hz",     link:"https://www.oneplus.com/in"},
+  {name:"Motorola Edge 50 Pro",       price:31999,  perf:8.5, battery:8.5, camera:9.0, spec:"Snapdragon 7 Gen 3 | 12GB+256GB | 50MP OIS | 4500mAh | 6.7\" pOLED 144Hz | 125W",link:"https://www.motorola.in"},
+  {name:"Samsung Galaxy S23 FE",      price:44999,  perf:9.0, battery:8.0, camera:9.0, spec:"Snapdragon 8 Gen 1 | 8GB+128GB | 50MP OIS | 4500mAh | 6.4\" AMOLED 120Hz | IP68",link:"https://www.samsung.com/in"},
+  {name:"Google Pixel 8a",            price:49999,  perf:9.0, battery:8.5, camera:9.5, spec:"Tensor G3 | 8GB+128GB | 64MP | 4500mAh | 6.1\" OLED 120Hz | AI Features | IP67",  link:"https://store.google.com/in"},
+  {name:"iQOO 12",                    price:52999,  perf:9.5, battery:8.5, camera:9.0, spec:"Snapdragon 8 Gen 3 | 12GB+256GB | 50MP Zeiss | 5000mAh 120W | 6.78\" AMOLED 144Hz",link:"https://www.iqoo.com/in"},
+  {name:"OnePlus 12",                 price:59999,  perf:9.5, battery:9.0, camera:9.0, spec:"Snapdragon 8 Gen 3 | 12GB+256GB | 50MP Hasselblad | 5400mAh 100W | 6.82\" AMOLED",link:"https://www.oneplus.com/in"},
+  {name:"Samsung Galaxy S24",         price:69999,  perf:9.5, battery:8.5, camera:9.5, spec:"Exynos 2400 | 8GB+128GB | 50MP | 4000mAh | 6.2\" AMOLED 120Hz | Galaxy AI | IP68",link:"https://www.samsung.com/in"},
+  {name:"Asus ROG Phone 8",           price:74999,  perf:9.8, battery:9.0, camera:8.5, spec:"Snapdragon 8 Gen 3 | 12GB+256GB | 50MP | 5500mAh 65W | 6.78\" AMOLED 165Hz | IP68",link:"https://rog.asus.com/in"},
+  {name:"iPhone 15",                  price:79900,  perf:9.5, battery:8.5, camera:9.5, spec:"Apple A16 Bionic | 6GB+128GB | 48MP | USB-C | 6.1\" OLED | Dynamic Island | IP68",link:"https://www.apple.com/in"},
+  {name:"iPhone 16",                  price:79900,  perf:9.6, battery:9.0, camera:9.5, spec:"Apple A18 | 8GB+128GB | 48MP | Camera Control | 6.1\" OLED | Wi-Fi 7 | IP68",     link:"https://www.apple.com/in"},
+  {name:"Google Pixel 9",             price:79999,  perf:9.5, battery:8.5, camera:9.8, spec:"Tensor G4 | 12GB+128GB | 50MP | 4700mAh | 6.3\" OLED 120Hz | AI Call Screen | IP68",link:"https://store.google.com/in"},
+  {name:"Samsung Galaxy S25",         price:79999,  perf:9.7, battery:8.5, camera:9.5, spec:"Snapdragon 8 Elite | 12GB+128GB | 50MP | 4000mAh | 6.2\" AMOLED 120Hz | AI | IP68",link:"https://www.samsung.com/in"},
+  {name:"iPhone 16 Plus",             price:89900,  perf:9.6, battery:9.5, camera:9.5, spec:"Apple A18 | 8GB+128GB | 48MP | 6.7\" OLED | Camera Control | Largest Battery iPhone",link:"https://www.apple.com/in"},
+  {name:"Samsung Galaxy S24+",        price:89999,  perf:9.5, battery:8.5, camera:9.5, spec:"Exynos 2400 | 12GB+256GB | 50MP | 4900mAh | 6.7\" AMOLED 120Hz | Galaxy AI | IP68",link:"https://www.samsung.com/in"},
+  {name:"Samsung Galaxy S25+",        price:99999,  perf:9.7, battery:9.0, camera:9.5, spec:"Snapdragon 8 Elite | 12GB+256GB | 50MP | 4900mAh | 6.7\" AMOLED 120Hz | AI | IP68",link:"https://www.samsung.com/in"},
+  {name:"iPhone 16 Pro",              price:119900, perf:9.8, battery:9.0, camera:9.8, spec:"Apple A18 Pro | 8GB+128GB | 48MP ProRAW | Camera Control | 6.3\" OLED | IP68",     link:"https://www.apple.com/in"},
+  {name:"Samsung Galaxy S24 Ultra",   price:119999, perf:9.8, battery:9.0, camera:9.9, spec:"Snapdragon 8 Gen 3 | 12GB+256GB | 200MP | 5000mAh | 6.8\" AMOLED 120Hz | S Pen | IP68",link:"https://www.samsung.com/in"},
+  {name:"Google Pixel 9 Pro XL",      price:129999, perf:9.7, battery:9.0, camera:9.9, spec:"Tensor G4 | 16GB+128GB | 50MP Triple | 5060mAh | 6.8\" OLED 120Hz | Best AI Camera",link:"https://store.google.com/in"},
+  {name:"iPhone 15 Pro Max",          price:159900, perf:9.8, battery:8.5, camera:9.8, spec:"Apple A17 Pro | 8GB+256GB | 48MP ProRAW | Titanium | 6.7\" OLED | USB3 | IP68",   link:"https://www.apple.com/in"},
+  {name:"iPhone 16 Pro Max",          price:159900, perf:9.9, battery:9.0, camera:9.9, spec:"Apple A18 Pro | 8GB+256GB | 48MP | ProRes 4K 120fps | 6.9\" OLED | IP68",         link:"https://www.apple.com/in"},
+  {name:"Samsung Galaxy S25 Ultra",   price:179999, perf:9.9, battery:9.0, camera:9.9, spec:"Snapdragon 8 Elite | 12GB+256GB | 200MP | 5000mAh | 6.9\" AMOLED 120Hz | AI S Pen",link:"https://www.samsung.com/in"}
+];
+
+// ============================================================
+// LAPTOPS — 30 products (₹26,990 → ₹1,99,990)
+// ============================================================
+var LAPTOPS = [
+  {name:"Lenovo IdeaPad Slim 3",       price:26990,  perf:6.5, battery:7.0, spec:"Intel i3-1215U | 8GB | 256GB SSD | 15.6\" FHD | Win11 | 720p Webcam",             link:"https://www.lenovo.com/in"},
+  {name:"Acer Aspire 3",               price:29990,  perf:7.0, battery:7.0, spec:"AMD Ryzen 3 7320U | 8GB | 512GB SSD | 15.6\" FHD | Win11 | Backlit KB",            link:"https://www.acer.com/in"},
+  {name:"HP Laptop 15s",               price:37990,  perf:7.0, battery:7.5, spec:"AMD Ryzen 5 7520U | 8GB | 512GB SSD | 15.6\" FHD | Win11 | HP Fast Charge",        link:"https://www.hp.com/in"},
+  {name:"Acer Aspire 5",               price:46990,  perf:7.5, battery:7.5, spec:"Intel i5-1235U | 16GB | 512GB SSD | 15.6\" FHD IPS | Win11 | Dual Fan",            link:"https://www.acer.com/in"},
+  {name:"ASUS VivoBook 16",            price:46990,  perf:7.5, battery:8.0, spec:"AMD Ryzen 5 7530U | 16GB | 512GB SSD | 16\" WUXGA | Win11 | Backlit KB",           link:"https://www.asus.com/in"},
+  {name:"HP Victus 15",                price:54990,  perf:8.0, battery:7.0, spec:"AMD Ryzen 5 7535HS | 8GB | 512GB SSD | GTX 1650 4GB | 15.6\" FHD 144Hz",          link:"https://www.hp.com/in"},
+  {name:"Dell Inspiron 15",            price:54990,  perf:8.0, battery:7.5, spec:"Intel i5-1335U | 16GB | 512GB SSD | 15.6\" FHD | Win11 | Dell CinemaColor",        link:"https://www.dell.com/in"},
+  {name:"HP Pavilion 15",              price:59990,  perf:8.0, battery:7.5, spec:"Intel i5-1235U | 16GB | 512GB SSD | 15.6\" FHD IPS | Win11 | HP Audio Boost",     link:"https://www.hp.com/in"},
+  {name:"Lenovo IdeaPad 5",            price:64990,  perf:8.5, battery:8.0, spec:"AMD Ryzen 7 7730U | 16GB | 512GB SSD | 15.6\" FHD IPS | Win11 | Dolby Audio",     link:"https://www.lenovo.com/in"},
+  {name:"ASUS ZenBook 14 OLED",        price:69990,  perf:8.5, battery:8.5, spec:"AMD Ryzen 7 8845HS | 16GB | 512GB SSD | 14\" 2.8K OLED 120Hz | Win11",            link:"https://www.asus.com/in"},
+  {name:"ASUS ROG Strix G15",          price:79990,  perf:8.5, battery:6.5, spec:"AMD Ryzen 9 | 16GB | RTX 3050 4GB | 512GB SSD | 15.6\" FHD 144Hz",               link:"https://rog.asus.com/in"},
+  {name:"HP Envy x360",                price:84990,  perf:8.5, battery:8.5, spec:"Intel i5-1335U | 16GB | 512GB SSD | 14\" OLED Touch 2-in-1 | Win11",              link:"https://www.hp.com/in"},
+  {name:"Acer Predator Helios 300",    price:89990,  perf:9.0, battery:6.0, spec:"Intel i7-12700H | 16GB | RTX 3060 6GB | 512GB SSD | 15.6\" FHD 144Hz",            link:"https://www.acer.com/in"},
+  {name:"Lenovo Legion 5",             price:89990,  perf:9.0, battery:7.0, spec:"AMD Ryzen 7 7745HX | 16GB | RTX 4060 8GB | 512GB SSD | 15.6\" FHD 165Hz",        link:"https://www.lenovo.com/in"},
+  {name:"Dell XPS 13",                 price:94990,  perf:9.0, battery:8.0, spec:"Intel i7-1360P | 16GB | 512GB SSD | 13.4\" FHD+ InfinityEdge | Win11",            link:"https://www.dell.com/in"},
+  {name:"MacBook Air M2",              price:114900, perf:9.0, battery:9.5, spec:"Apple M2 8-Core | 8GB | 256GB SSD | 13.6\" Liquid Retina | 18H Battery | macOS",  link:"https://www.apple.com/in"},
+  {name:"MacBook Air M3",              price:119900, perf:9.0, battery:9.5, spec:"Apple M3 8-Core | 8GB | 256GB SSD | 13.6\" Liquid Retina | 18H | Wi-Fi 6E",       link:"https://www.apple.com/in"},
+  {name:"ASUS ROG Zephyrus G14",       price:129990, perf:9.0, battery:7.0, spec:"Ryzen 9 8945HS | 16GB | RTX 4060 8GB | 1TB SSD | 14\" 165Hz OLED | Win11",       link:"https://rog.asus.com/in"},
+  {name:"LG Gram 17",                  price:129990, perf:8.5, battery:9.5, spec:"Intel i7-1360P | 16GB | 512GB SSD | 17\" WQXGA IPS | 80Wh | 1.35kg | Win11",     link:"https://www.lg.com/in"},
+  {name:"Lenovo ThinkPad X1 Carbon",   price:134990, perf:9.0, battery:9.0, spec:"Intel i7-1365U | 16GB | 512GB SSD | 14\" FHD+ | MIL-SPEC 12 | Win11 Pro",       link:"https://www.lenovo.com/in"},
+  {name:"Microsoft Surface Laptop 6",  price:149990, perf:9.0, battery:9.0, spec:"Intel Core Ultra 5 | 16GB | 256GB SSD | 13.5\" PixelSense 120Hz | Win11",        link:"https://www.microsoft.com/en-in"},
+  {name:"MacBook Pro 14 M3",           price:168900, perf:9.5, battery:9.5, spec:"Apple M3 | 8GB | 512GB SSD | 14.2\" Liquid Retina XDR | ProRes | macOS",         link:"https://www.apple.com/in"},
+  {name:"MacBook Pro 14 M3 Pro",       price:189900, perf:9.6, battery:9.5, spec:"Apple M3 Pro 11-Core | 18GB | 512GB SSD | 14.2\" Liquid Retina XDR | macOS",     link:"https://www.apple.com/in"},
+  {name:"Dell XPS 15",                 price:174990, perf:9.5, battery:7.5, spec:"Intel i7-13700H | 32GB | RTX 4060 8GB | 1TB SSD | 15.6\" OLED | Win11",          link:"https://www.dell.com/in"},
+  {name:"MSI Raider GE78",             price:179990, perf:9.5, battery:6.5, spec:"Intel i9-13980HX | 32GB | RTX 4080 12GB | 1TB SSD | 17\" QHD+ 240Hz | Win11",    link:"https://in.msi.com"},
+  {name:"Razer Blade 15",              price:189990, perf:9.5, battery:7.0, spec:"Intel i7-13800H | 16GB | RTX 4070 8GB | 1TB SSD | 15.6\" QHD 240Hz | Win11",     link:"https://www.razer.com/in"},
+  {name:"MacBook Pro 16 M3 Pro",       price:199900, perf:9.8, battery:9.5, spec:"Apple M3 Pro 12-Core | 18GB | 512GB SSD | 16.2\" Liquid Retina XDR | macOS",     link:"https://www.apple.com/in"},
+  {name:"Dell Alienware m18",          price:199990, perf:9.8, battery:6.0, spec:"Intel i9-13980HX | 32GB | RTX 4090 16GB | 1TB SSD | 18\" QHD+ 165Hz | Win11",    link:"https://www.dell.com/in"},
+  {name:"ASUS ROG Flow X16",           price:199990, perf:9.7, battery:7.5, spec:"Ryzen 9 7940HS | 16GB | RTX 4070 8GB | 1TB SSD | 16\" QHD+ 240Hz 2-in-1",      link:"https://rog.asus.com/in"}
+];
+
+// ============================================================
+// STUDY CHANNELS — 7 topics × 2 channels each
+// ============================================================
+var STUDY_CHANNELS = {
+  general: [
+    {name:"Physics Wallah (PW)",  subs:"10 Cr+", focus:"JEE, NEET, Class 9-12 | All Subjects | Free",               note:"India's #1 free education by Alakh Pandey. Physics, Chemistry, Math, Biology and more — completely free.",          link:"https://www.youtube.com/@PhysicsWallah",       bg:"#FF6B00",fg:"#fff"},
+    {name:"Unacademy",            subs:"3.5 Cr+",focus:"IIT JEE, NEET, UPSC, Banking, SSC, CAT | Expert Faculty",   note:"India's largest online learning platform. Expert educators for every competitive exam with live sessions.",            link:"https://www.youtube.com/@unacademy",           bg:"#0D0D0D",fg:"#fff"}
+  ],
+  jeeNeet: [
+    {name:"Physics Wallah (PW)",  subs:"10 Cr+", focus:"JEE Main, JEE Advanced, NEET | Physics Chemistry Math Bio", note:"Legendary free JEE/NEET coaching. Best for concept building in all sciences. Millions of students rely on this.",    link:"https://www.youtube.com/@PhysicsWallah",       bg:"#FF6B00",fg:"#fff"},
+    {name:"Vedantu JEE",          subs:"5 Cr+",  focus:"JEE Main, JEE Advanced, NEET | Live & Recorded Classes",   note:"India's top live online learning with IIT/AIIMS alumni. Structured courses and doubt clearing sessions.",              link:"https://www.youtube.com/@VedantuJEE",          bg:"#F25022",fg:"#fff"}
+  ],
+  coding: [
+    {name:"CodeWithHarry",        subs:"5 Cr+",  focus:"Python, Web Dev, C++, DSA, AI, ML | Hindi",                note:"India's most loved coding channel — complete courses in Hindi from scratch to advanced. Python, JS, C++, Django.",      link:"https://www.youtube.com/@CodeWithHarry",       bg:"#0D0D0D",fg:"#FFD700"},
+    {name:"Apna College",         subs:"4.5 Cr+",focus:"DSA, Java, C++, Web Dev, Placements | Hindi",              note:"Best for DSA, Algorithms and placement prep. Trusted by millions of college students for cracking product companies.", link:"https://www.youtube.com/@ApnaCollegeOfficial", bg:"#1565C0",fg:"#fff"}
+  ],
+  upsc: [
+    {name:"StudyIQ IAS",          subs:"2.5 Cr+",focus:"UPSC IAS, State PSC | Current Affairs | GS 1-4",           note:"India's top UPSC channel. Daily current affairs, polity, economy, geography deep dives. Trusted by IAS aspirants.",   link:"https://www.youtube.com/@StudyIQEducation",   bg:"#1A237E",fg:"#fff"},
+    {name:"Unacademy UPSC",       subs:"1.5 Cr+",focus:"UPSC IAS, IES, State PCS | Expert Faculty | Mock Tests",   note:"Top IAS faculty in one place. Best structured UPSC syllabus coverage with answer writing and mock interviews.",          link:"https://www.youtube.com/@UnacademyIAS",        bg:"#0D0D0D",fg:"#fff"}
+  ],
+  english: [
+    {name:"Spoken English Guru",  subs:"1.5 Cr+",focus:"Spoken English, Grammar, Vocabulary | Explained in Hindi",  note:"Best channel to go from zero to fluent English. Simple daily exercises and conversation practice explained in Hindi.",   link:"https://www.youtube.com/@SpokenEnglishGuru",  bg:"#C62828",fg:"#fff"},
+    {name:"English with Lucy",    subs:"1.5 Cr+",focus:"British English, Grammar, Pronunciation | In English",      note:"Learn natural British English with clear pronunciation guides, vocabulary building and advanced grammar lessons.",         link:"https://www.youtube.com/@EnglishwithLucy",    bg:"#AD1457",fg:"#fff"}
+  ],
+  math: [
+    {name:"3Blue1Brown",          subs:"6 Cr+",  focus:"Mathematics, Calculus, Linear Algebra | Animations",        note:"World's best math visualization. Makes complex math intuitive and beautiful — perfect for JEE and degree-level maths.",  link:"https://www.youtube.com/@3blue1brown",        bg:"#1565C0",fg:"#fff"},
+    {name:"Khan Academy",         subs:"8 Cr+",  focus:"Math, Science, Economics | Class 1 to Degree | Free",       note:"World's most trusted free education. Structured math from arithmetic to AP Calculus — 100% free.",                      link:"https://www.youtube.com/@khanacademy",        bg:"#14BF96",fg:"#111"}
+  ],
+  business: [
+    {name:"CA Rachana Ranade",    subs:"2 Cr+",  focus:"Stock Market, Personal Finance, Mutual Funds | Hindi",      note:"India's most trusted finance educator. Best for beginners learning investing, stocks and financial planning in Hindi.",   link:"https://www.youtube.com/@CARachanaRanade",    bg:"#B71C1C",fg:"#fff"},
+    {name:"Pranjal Kamra",        subs:"1 Cr+",  focus:"Stock Market, Investing, Financial Literacy | Hindi",        note:"Trusted stock market educator covering long-term investing, fundamental analysis and financial independence.",             link:"https://www.youtube.com/@PranjalKamra",       bg:"#1B5E20",fg:"#fff"}
+  ]
+};
+
+// ============================================================
+// Unified data map
+// ============================================================
+var ALL_DATA = {
+  earbuds: EARBUDS,
+  phone:   PHONES,
+  laptop:  LAPTOPS
+};

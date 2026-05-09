@@ -1,0 +1,531 @@
+// ============================================================
+// NexPick Logic — AI parsing, self-learning, rendering
+// ============================================================
+
+// ============================================================
+// IMAGE GENERATOR
+// ============================================================
+function makeImg(productName) {
+  var cfg = {bg:"#222222", fg:"#ffffff"};
+  var label = productName.split(" ")[0];
+  for (var b in BRAND_COLORS) {
+    if (productName.indexOf(b) !== -1) {
+      cfg = BRAND_COLORS[b];
+      label = b;
+      break;
+    }
+  }
+  if (label.length > 8) label = label.substring(0, 8);
+  var svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="110" height="110">' +
+    '<rect width="110" height="110" rx="14" fill="' + cfg.bg + '"/>' +
+    '<text x="55" y="66" font-family="Arial,sans-serif" font-size="17"' +
+    ' font-weight="bold" fill="' + cfg.fg + '" text-anchor="middle">' + label + '</text>' +
+    '</svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// ============================================================
+// SELF-LEARNING AI ENGINE
+// ============================================================
+var NexPickAI = {
+  history: [],
+
+  init: function () {
+    try {
+      var s = localStorage.getItem('nexpick_ai_v3');
+      if (s) this.history = JSON.parse(s);
+    } catch (e) {}
+    this.refreshUI();
+  },
+
+  learn: function (q, cat, pri, bud) {
+    this.history.push({q: q, cat: cat, pri: pri, bud: bud, t: Date.now()});
+    if (this.history.length > 100) this.history = this.history.slice(-100);
+    try { localStorage.setItem('nexpick_ai_v3', JSON.stringify(this.history)); } catch (e) {}
+    this.refreshUI();
+  },
+
+  topCategory: function () {
+    if (!this.history.length) return null;
+    var c = {};
+    this.history.forEach(function (h) { c[h.cat] = (c[h.cat] || 0) + 1; });
+    return Object.keys(c).sort(function (a, b) { return c[b] - c[a]; })[0];
+  },
+
+  avgBudget: function (cat) {
+    var r = this.history.filter(function (h) { return h.cat === cat && h.bud > 0; });
+    if (!r.length) return null;
+    return Math.round(r.reduce(function (s, h) { return s + h.bud; }, 0) / r.length);
+  },
+
+  refreshUI: function () {
+    var topCat = this.topCategory();
+    var el = document.getElementById('aiPersonal');
+    if (!el) return;
+    if (!topCat || this.history.length < 2) { el.style.display = 'none'; return; }
+
+    var catLabel = {earbuds:'&#127911; Earbuds', phone:'&#128241; Phones', laptop:'&#128187; Laptops', study:'&#127891; Study'}[topCat] || topCat;
+    var avg = this.avgBudget(topCat);
+    var avgStr = avg ? ' &bull; Avg budget &#8377;' + avg.toLocaleString('en-IN') : '';
+    el.innerHTML = '&#129504; AI learned: You often search for <strong>' + catLabel + '</strong>' + avgStr;
+    el.style.display = 'block';
+
+    if (avg && topCat !== 'study') {
+      var chips = document.getElementById('aiExamples');
+      if (chips) {
+        var old = chips.querySelector('[data-learned]');
+        if (old) old.remove();
+        var cname = topCat === 'earbuds' ? 'earbuds' : topCat === 'phone' ? 'phone' : 'laptop';
+        var bStr = avg >= 100000 ? (avg / 100000).toFixed(1) + ' lakh' : avg >= 1000 ? Math.round(avg / 1000) + 'k' : avg;
+        var chip = document.createElement('span');
+        chip.setAttribute('data-learned', '1');
+        chip.style.cssText = 'border-color:#6bff8a;color:#6bff8a;background:rgba(107,255,138,0.10)';
+        chip.textContent = '\uD83E\uDDE0 Best ' + cname + ' under \u20B9' + bStr;
+        chip.onclick = function () { fillExample(chip); };
+        chips.insertBefore(chip, chips.firstChild);
+      }
+    }
+  }
+};
+
+// ============================================================
+// NATURAL LANGUAGE PARSER
+// ============================================================
+function parseNaturalLanguage(text) {
+  var t = text.toLowerCase().trim();
+  var result = {budget: null, category: null, priority: null, studyTopic: null, missing: []};
+
+  // --- Study detection (checked FIRST) ---
+  var studyPatterns = /study|learn|education|youtube\s*channel|channel\s*youtube|lecture|tutorial|jee|neet|upsc|ias\b|class\s*\d+|programming|coding|software\s*dev|python|java\b|web\s*dev|spoken\s*english|english\s*speak|grammar|math\s*channel|finance\s*channel|stock.*learn|invest.*learn|competitive\s*exam/i;
+  if (studyPatterns.test(t)) {
+    result.category = 'study';
+    if (/coding|programming|software|python|java\b|web\s*dev|developer|computer\s*science/i.test(t)) result.studyTopic = 'coding';
+    else if (/jee|neet|physics|chemistry|biology|medical|engineering\s*entrance/i.test(t)) result.studyTopic = 'jeeNeet';
+    else if (/upsc|ias\b|ips\b|civil\s*service|government\s*exam/i.test(t)) result.studyTopic = 'upsc';
+    else if (/english|spoken|grammar|vocabulary|pronunciation/i.test(t)) result.studyTopic = 'english';
+    else if (/math|maths|calculus|algebra|trigono/i.test(t)) result.studyTopic = 'math';
+    else if (/finance|invest|stock|trading|mutual\s*fund/i.test(t)) result.studyTopic = 'business';
+    else result.studyTopic = 'general';
+    return result;
+  }
+
+  // --- Budget Detection ---
+  var bud = null;
+  var m;
+  // lakh: "1 lakh", "1.5lakh", "1L"
+  m = t.match(/(\d+(?:\.\d+)?)\s*(?:lakh|lac)\b/i);
+  if (m) { bud = Math.round(parseFloat(m[1]) * 100000); }
+
+  // k / thousand: "5k", "50k", "5 thousand"
+  if (!bud) {
+    m = t.match(/(\d+(?:\.\d+)?)\s*(?:k\b|thousand)/i);
+    if (m) bud = Math.round(parseFloat(m[1]) * 1000);
+  }
+
+  // Comma-formatted: "50,000" or "1,00,000"
+  if (!bud) {
+    m = t.match(/(\d{1,2}(?:,\d{2})+(?:,\d{3})?)\b/);
+    if (m) bud = parseInt(m[1].replace(/,/g, ''), 10);
+  }
+
+  // Preceded by ₹, rs, rupees
+  if (!bud) {
+    m = t.match(/(?:rs\.?\s*|inr\s*|rupees?\s*|₹\s*)(\d{3,7})\b/i);
+    if (m) bud = parseInt(m[1], 10);
+  }
+
+  // Followed by rupees
+  if (!bud) {
+    m = t.match(/\b(\d{3,7})\s*(?:rs\.?|inr|rupees?)\b/i);
+    if (m) bud = parseInt(m[1], 10);
+  }
+
+  // Any standalone 3-7 digit number as last resort
+  if (!bud) {
+    m = t.match(/\b(\d{3,7})\b/);
+    if (m) bud = parseInt(m[1], 10);
+  }
+
+  result.budget = bud;
+
+  // --- Category Detection ---
+  if (/earbuds?|buds\b|earpods?|airpods?|tws\b|earphones?|headphone|headset|earpiece|wireless\s*ear/i.test(t)) {
+    result.category = 'earbuds';
+  } else if (/laptop|notebook|macbook|computer\b|chromebook|gaming\s*laptop/i.test(t)) {
+    result.category = 'laptop';
+  } else if (/phone|mobile|smartphone|iphone|android|handset/i.test(t)) {
+    result.category = 'phone';
+  }
+
+  // --- Priority Detection ---
+  if (/battery|long.?last|battery.?life|endurance|all.?day|stamina|backup/i.test(t)) {
+    result.priority = 'battery';
+  } else if (/gaming|performance|fast|speed|powerful|processor|chip|ram\b|fps\b|heavy/i.test(t)) {
+    result.priority = 'performance';
+  } else if (/value|cheap|affordable|best.?deal|budget\s|worth|economical|tight/i.test(t)) {
+    result.priority = 'value';
+  } else if (/camera|photo|photography|picture|video|selfie|portrait/i.test(t)) {
+    result.priority = 'performance';
+  } else if (/sound|audio|bass|music|noise.?cancel|anc\b|hi.?fi|hi.?res/i.test(t)) {
+    result.priority = 'performance';
+  } else if (/gym|workout|sport|fitness|running|outdoor|active/i.test(t)) {
+    result.priority = 'battery';
+  } else if (/student|college|school|work|office|light\s*use/i.test(t)) {
+    result.priority = 'value';
+  } else {
+    result.priority = 'value';
+  }
+
+  if (!result.budget)   result.missing.push('budget');
+  if (!result.category) result.missing.push('category');
+  return result;
+}
+
+// ============================================================
+// STUDY CHANNELS DISPLAY
+// ============================================================
+function showStudyChannels(topic) {
+  var channels = STUDY_CHANNELS[topic] || STUDY_CHANNELS.general;
+  var html = "<p class='result-label'>&#127891; Top 2 YouTube Channels For You</p><div class='cards-row'>";
+
+  channels.forEach(function (ch) {
+    var svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="110" height="110">' +
+      '<rect width="110" height="110" rx="14" fill="' + ch.bg + '"/>' +
+      '<text x="55" y="46" font-family="Arial,sans-serif" font-size="26" font-weight="bold" fill="' + ch.fg + '" text-anchor="middle">YT</text>' +
+      '<text x="55" y="68" font-family="Arial,sans-serif" font-size="10" fill="' + ch.fg + '" text-anchor="middle">YouTube</text>' +
+      '</svg>';
+    var imgSrc = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+
+    html += "<div class='card' onclick=\"window.open('" + ch.link + "','_blank')\">";
+    html += "<img src='" + imgSrc + "' alt='" + ch.name + "'>";
+    html += "<h3>" + ch.name + "</h3>";
+    html += "<p style='color:#ff8888;font-size:0.8em;font-weight:bold;margin:3px 0'>&#128100; " + ch.subs + " subscribers</p>";
+    html += "<p class='spec-text'>" + ch.focus + "</p>";
+    html += "<p class='spec-text' style='margin-top:6px;color:#bbb'>" + ch.note + "</p>";
+    html += "<span class='visit-link'>&#128279; Open Channel</span>";
+    html += "</div>";
+  });
+
+  html += "</div><p class='budget-tip'>&#9989; Subscribe and start learning today &mdash; it&#39;s completely free!</p>";
+  document.getElementById('result').innerHTML = html;
+}
+
+// ============================================================
+// FILL EXAMPLE CHIPS
+// ============================================================
+function fillExample(el) {
+  document.getElementById('aiInput').value = el.textContent || el.innerText;
+  document.getElementById('aiInput').focus();
+}
+
+// ============================================================
+// ASK AI
+// ============================================================
+function askAI() {
+  var text    = (document.getElementById('aiInput').value || '').trim();
+  var msgDiv  = document.getElementById('aiMessage');
+  var thinkDiv = document.getElementById('aiThinking');
+
+  if (!text) {
+    msgDiv.innerHTML = "<span style='color:#ff6b6b'>&#9888; Please describe what you are looking for!</span>";
+    return;
+  }
+
+  msgDiv.innerHTML = '';
+  thinkDiv.style.display = 'flex';
+
+  setTimeout(function () {
+    thinkDiv.style.display = 'none';
+    var parsed = parseNaturalLanguage(text);
+
+    // --- Study channels ---
+    if (parsed.category === 'study') {
+      msgDiv.innerHTML =
+        "<div style='color:#6bff8a;font-weight:bold;margin-bottom:8px'>&#10003; Got it! Showing best YouTube channels:</div>" +
+        "<div class='ai-detected'><div class='ai-tag'>Topic <strong>&#127891; " + (parsed.studyTopic || 'General') + "</strong></div></div>";
+      NexPickAI.learn(text, 'study', 'learn', 0);
+      setTimeout(function () {
+        showStudyChannels(parsed.studyTopic || 'general');
+        document.getElementById('result').scrollIntoView({behavior: 'smooth'});
+      }, 350);
+      return;
+    }
+
+    // --- Missing budget ---
+    if (parsed.missing.indexOf('budget') !== -1) {
+      msgDiv.innerHTML =
+        "<span style='color:#ff6b6b'>&#9888; I couldn't detect a budget.<br>" +
+        "Try: <b>\"earbuds under &#8377;5000\"</b> or <b>\"laptop 50k\"</b></span>";
+      return;
+    }
+
+    // --- Missing category ---
+    if (parsed.missing.indexOf('category') !== -1) {
+      msgDiv.innerHTML =
+        "<span style='color:#ff6b6b'>&#9888; Not sure what gadget you want.<br>" +
+        "Mention <b>earbuds</b>, <b>phone</b>, or <b>laptop</b>!</span>";
+      return;
+    }
+
+    var catLabel = {earbuds:'&#127911; Earbuds', phone:'&#128241; Phone', laptop:'&#128187; Laptop'}[parsed.category];
+    var priLabel = {battery:'&#128267; Battery', performance:'&#9889; Performance', value:'&#128176; Best Value'}[parsed.priority];
+
+    msgDiv.innerHTML =
+      "<div style='color:#6bff8a;font-weight:bold;margin-bottom:8px'>&#10003; Understood! Here's what AI detected:</div>" +
+      "<div class='ai-detected'>" +
+        "<div class='ai-tag'>Gadget <strong>" + catLabel + "</strong></div>" +
+        "<div class='ai-tag'>Budget <strong>&#8377;" + parsed.budget.toLocaleString('en-IN') + "</strong></div>" +
+        "<div class='ai-tag'>Priority <strong>" + priLabel + "</strong></div>" +
+      "</div>";
+
+    NexPickAI.learn(text, parsed.category, parsed.priority, parsed.budget);
+    document.getElementById('budget').value   = parsed.budget;
+    document.getElementById('category').value = parsed.category;
+    document.getElementById('priority').value = parsed.priority;
+
+    setTimeout(function () {
+      getPick();
+      document.getElementById('result').scrollIntoView({behavior: 'smooth'});
+    }, 350);
+
+  }, 1100);
+}
+
+// ============================================================
+// GET PRODUCT RECOMMENDATIONS
+// ============================================================
+function getPick() {
+  var budget    = parseInt(document.getElementById('budget').value, 10);
+  var category  = document.getElementById('category').value;
+  var priority  = document.getElementById('priority').value;
+  var resultDiv = document.getElementById('result');
+
+  if (!budget || isNaN(budget) || budget <= 0) {
+    resultDiv.innerHTML = "<p style='color:#ff4d4d;font-weight:bold;text-align:center;padding:20px'>Please enter a valid budget!</p>";
+    return;
+  }
+
+  var list = ALL_DATA[category] || [];
+
+  // Try 80-100% of budget range first
+  var minPrice = Math.floor(budget * 0.8);
+  var filtered = list.filter(function (p) { return p.price >= minPrice && p.price <= budget; });
+
+  // Fall back to all products within budget if range is empty
+  if (!filtered.length) {
+    filtered = list.filter(function (p) { return p.price <= budget; });
+  }
+
+  // Sort by chosen priority
+  if (priority === 'battery') {
+    filtered.sort(function (a, b) { return b.battery - a.battery; });
+  } else if (priority === 'performance') {
+    filtered.sort(function (a, b) { return b.perf - a.perf; });
+  } else {
+    // Best value = composite score
+    filtered.sort(function (a, b) {
+      var sb = b.perf + b.battery + (b.camera || 0);
+      var sa = a.perf + a.battery + (a.camera || 0);
+      return sb - sa;
+    });
+  }
+
+  var best = filtered.slice(0, 2);
+
+  if (!best.length) {
+    resultDiv.innerHTML = "<p style='color:#ff4d4d;font-weight:bold;text-align:center;padding:20px'>No products found in this budget. Try increasing it!</p>";
+    return;
+  }
+
+  var catReadable = { earbuds: 'earbuds', phone: 'phone', laptop: 'laptop' }[category] || category;
+  var priReadable = { battery: 'battery life', performance: 'performance', value: 'best value' }[priority] || priority;
+
+  var html  = "<div class='result-decision-banner'>";
+  html += "<span class='result-decision-label'>Best Pick for You</span>";
+  html += "<p class='result-decision-reason'>Based on your &#8377;" + parseInt(budget, 10).toLocaleString('en-IN') + " budget and priority for <strong>" + priReadable + "</strong> &mdash; this is the call.</p>";
+  html += "</div>";
+  html += "<div class='cards-row'>";
+
+  best.forEach(function (item, idx) {
+    var isTop = idx === 0;
+    var fields = '';
+    if (category === 'earbuds') {
+      fields = "<p class='stat-row'>&#128266; Sound <strong>" + item.perf + "/10</strong></p><p class='stat-row'>&#128267; Battery <strong>" + item.battery + "/10</strong></p>";
+    } else if (category === 'phone') {
+      fields = "<p class='stat-row'>&#9889; Perf <strong>" + item.perf + "/10</strong></p><p class='stat-row'>&#128247; Camera <strong>" + item.camera + "/10</strong></p><p class='stat-row'>&#128267; Battery <strong>" + item.battery + "/10</strong></p>";
+    } else {
+      fields = "<p class='stat-row'>&#9889; Perf <strong>" + item.perf + "/10</strong></p><p class='stat-row'>&#128267; Battery <strong>" + item.battery + "/10</strong></p>";
+    }
+
+    html += "<div class='card" + (isTop ? " card-top-pick" : " card-runner") + "' onclick=\"window.open('" + item.link + "','_blank')\">";
+    if (isTop) {
+      html += "<div class='card-top-strip'><span>&#11088; #1 Best Choice</span></div>";
+      html += "<div class='card-confidence'>This is the best choice based on your needs.</div>";
+    } else {
+      html += "<div class='card-runner-strip'><span>&#129352; Runner-Up</span></div>";
+    }
+    html += "<div class='card-inner'>";
+    html += "<img src=\"" + makeImg(item.name) + "\" alt=\"" + item.name + "\" class='card-logo'>";
+    html += "<h3 class='card-name" + (isTop ? " card-name-top" : "") + "'>" + item.name + "</h3>";
+    html += "<p class='price'>&#8377;" + item.price.toLocaleString('en-IN') + "</p>";
+    html += fields;
+    html += "<p class='spec-text'>" + item.spec + "</p>";
+    if (isTop) {
+      html += "<div class='card-final-verdict'><span class='card-verdict-chip'>&#127942; Final Decision</span><p>Best overall " + catReadable + " in your budget &mdash; no better option at this price.</p></div>";
+    }
+    html += "<span class='visit-link'>&#128279; Visit Official Site</span>";
+    html += "</div>";
+    html += "</div>";
+  });
+
+  html += "</div><p class='budget-tip'>&#128161; Want even more options? Try the Decision Engine above.</p>";
+  resultDiv.innerHTML = html;
+}
+
+// ============================================================
+// MANUAL FORM TOGGLE
+// ============================================================
+function toggleManual() {
+  var s = document.getElementById('manualSection');
+  s.style.display = s.style.display === 'none' ? 'flex' : 'none';
+}
+
+// ============================================================
+// DECISION WIZARD
+// ============================================================
+var WIZARD_CONFIG = {
+  study:       { priority: 'battery',     label: 'Study & Learning',    emoji: '\uD83D\uDCDA' },
+  work:        { priority: 'performance', label: 'Work & Productivity',  emoji: '\uD83D\uDCBC' },
+  gaming:      { priority: 'performance', label: 'Gaming',              emoji: '\uD83C\uDFAE' },
+  photography: { priority: 'performance', label: 'Photography',         emoji: '\uD83D\uDCF7' },
+  gym:         { priority: 'battery',     label: 'Gym & Sports',        emoji: '\uD83C\uDFCB' },
+  everyday:    { priority: 'value',       label: 'Everyday Use',        emoji: '\u2615' }
+};
+
+var BUDGET_RANGES = {
+  '5000':   { min: 0,       max: 5000   },
+  '15000':  { min: 5000,    max: 15000  },
+  '30000':  { min: 15000,   max: 30000  },
+  '60000':  { min: 30000,   max: 60000  },
+  '100000': { min: 60000,   max: 100000 },
+  '200000': { min: 100000,  max: 200000 }
+};
+
+function buildReason(item, category, purpose) {
+  var purposeMap = {
+    study:       { earbuds: 'Long battery keeps you going through full study sessions without recharging.',
+                   phone:   'Reliable performance and great battery life make it ideal for study apps and notes.',
+                   laptop:  'All-day battery and solid performance handle lectures, notes, and research effortlessly.' },
+    work:        { earbuds: 'Clear call quality and noise cancellation keep you focused in any environment.',
+                   phone:   'Powerful processor and display make multitasking and video calls smooth.',
+                   laptop:  'Fast processor and ample RAM handle heavy workloads, meetings, and multitasking.' },
+    gaming:      { earbuds: 'Low latency and deep bass deliver an immersive gaming audio experience.',
+                   phone:   'High refresh rate display and top processor deliver the best mobile gaming performance.',
+                   laptop:  'Dedicated GPU and high-refresh display make this a true gaming powerhouse.' },
+    photography: { earbuds: 'Excellent companion for video creators who need great audio to match their visuals.',
+                   phone:   'Outstanding camera system with top-class optics for photos and 4K video.',
+                   laptop:  'Fast CPU and colour-accurate display make photo/video editing smooth and precise.' },
+    gym:         { earbuds: 'Long-lasting battery and strong IP rating survive every intense workout session.',
+                   phone:   'Durable build, long battery, and fitness tracking features make it gym-ready.',
+                   laptop:  'Light and efficient — great for streaming workout plans or studying between sets.' },
+    everyday:    { earbuds: 'Excellent all-round sound, comfort, and battery for daily use at a great price.',
+                   phone:   'Balanced performance, camera, and battery for everything you do every day.',
+                   laptop:  'Best combination of speed, battery, and portability for daily work and browsing.' }
+  };
+  var base = (purposeMap[purpose] && purposeMap[purpose][category]) || 'Excellent choice in this budget.';
+  return '<strong>Why: </strong>' + base + ' Spec highlight: <strong>' + item.spec.split('|')[0].trim() + '</strong>.';
+}
+
+function buildVerdict(item, rank, purpose, category) {
+  var cfg = WIZARD_CONFIG[purpose] || {label: purpose, emoji: '\u2B50'};
+  if (rank === 0) {
+    return '\uD83C\uDFC6 Top pick for ' + cfg.emoji + ' ' + cfg.label + ' — best overall score in this budget.';
+  }
+  return '\uD83E\uDD48 Strong alternative — different strengths, same budget, worth considering.';
+}
+
+function runWizard() {
+  var cat      = document.getElementById('wizCat').value;
+  var budgetKey = document.getElementById('wizBudget').value;
+  var purpose  = document.getElementById('wizPurpose').value;
+  var out      = document.getElementById('wizResult');
+
+  if (!cat || !budgetKey || !purpose) {
+    out.innerHTML = "<p class='wiz-error'>\u26A0\uFE0F Please fill in all three fields above.</p>";
+    return;
+  }
+
+  var range    = BUDGET_RANGES[budgetKey];
+  var cfg      = WIZARD_CONFIG[purpose];
+  var list     = ALL_DATA[cat] || [];
+  var priority = cfg.priority;
+
+  var filtered = list.filter(function (p) {
+    return p.price >= range.min && p.price <= range.max;
+  });
+
+  // Widen to whole budget if range is too narrow
+  if (filtered.length < 2) {
+    filtered = list.filter(function (p) { return p.price <= range.max; });
+  }
+
+  if (priority === 'battery') {
+    filtered.sort(function (a, b) { return b.battery - a.battery; });
+  } else if (priority === 'performance') {
+    filtered.sort(function (a, b) {
+      var sb = b.perf + (b.camera || 0);
+      var sa = a.perf + (a.camera || 0);
+      return sb - sa;
+    });
+  } else {
+    filtered.sort(function (a, b) {
+      return (b.perf + b.battery + (b.camera||0)) - (a.perf + a.battery + (a.camera||0));
+    });
+  }
+
+  var picks = filtered.slice(0, 2);
+
+  if (!picks.length) {
+    out.innerHTML = "<p class='wiz-error'>\uD83D\uDE14 No products found in this budget. Try a higher range!</p>";
+    return;
+  }
+
+  var budgetReadable = '₹' + range.max.toLocaleString('en-IN');
+  var purposeLabel   = cfg.emoji + ' ' + cfg.label;
+
+  var html  = "<div class='result-decision-banner'>";
+  html += "<span class='result-decision-label'>Best Pick for You</span>";
+  html += "<p class='result-decision-reason'>Based on your " + budgetReadable + " budget and <strong>" + purposeLabel + "</strong> purpose &mdash; this is the call.</p>";
+  html += "</div>";
+  html += "<div class='wiz-cards'>";
+
+  picks.forEach(function (item, i) {
+    var isTop    = i === 0;
+    var topClass = isTop ? ' top-pick' : '';
+    html += "<div class='wiz-card" + topClass + "'>";
+    if (isTop) {
+      html += "<div class='wiz-top-strip'><span>\u2B50 #1 Best Choice</span></div>";
+      html += "<div class='wiz-confidence'>This is the best choice based on your needs.</div>";
+    } else {
+      html += "<span class='wiz-badge-top' style='background:var(--bg-off);color:var(--text2);border:1px solid var(--hairline)'>\uD83E\uDD48 Runner-Up</span>";
+    }
+    html += "<p class='wiz-card-name" + (isTop ? " wiz-name-top" : "") + "'>" + item.name + "</p>";
+    html += "<p class='wiz-card-price'>\u20B9" + item.price.toLocaleString('en-IN') + "</p>";
+    html += "<p class='wiz-card-reason'>" + buildReason(item, cat, purpose) + "</p>";
+    if (isTop) {
+      html += "<div class='wiz-final-verdict'><span class='wiz-verdict-chip'>\uD83C\uDFC6 Final Decision</span><p>" + buildVerdict(item, i, purpose, cat).replace(/^[^\s]+\s/, '') + "</p></div>";
+    } else {
+      html += "<div class='wiz-verdict'>" + buildVerdict(item, i, purpose, cat) + "</div>";
+    }
+    html += "<span class='wiz-visit' onclick=\"window.open('" + item.link + "','_blank')\">\uD83D\uDD17 Visit Official Site</span>";
+    html += "</div>";
+  });
+  html += "</div>";
+  out.innerHTML = html;
+  out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Init on load
+window.addEventListener('load', function () { NexPickAI.init(); });

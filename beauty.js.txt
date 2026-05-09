@@ -1,0 +1,399 @@
+// ============================================================
+// NexPick — Beauty Decision Engine v1
+// Skincare: skin type × concern × budget → routine picks
+// ============================================================
+
+var BEAUTY_DATA = {
+
+  // ── OILY SKIN ────────────────────────────────────────────
+  oily: {
+    acne: {
+      low: {
+        facewash:   { name:"Himalaya Neem Face Wash",            type:"Face Wash",  price:"₹90",   reason:"Neem's antibacterial power targets acne-causing bacteria while the gentle formula clears excess oil without stripping moisture.",                                               link:"https://www.amazon.in/s?k=Himalaya+Neem+Face+Wash" },
+        moisturizer:{ name:"Pond's Super Light Gel",             type:"Moisturizer",price:"₹149",  reason:"Water-based, oil-free gel that hydrates oily skin without clogging pores — the go-to daily moisturizer for acne-prone skin.",                                                link:"https://www.amazon.in/s?k=Ponds+Super+Light+Gel" },
+        sunscreen:  { name:"Lakme Sun Expert SPF50",             type:"Sunscreen",  price:"₹170",  reason:"Lightweight matte-finish SPF50 that protects without triggering breakouts or adding excess shine to oily skin.",                                                              link:"https://www.amazon.in/s?k=Lakme+Sun+Expert+SPF50" }
+      },
+      medium: {
+        facewash:   { name:"Minimalist Salicylic Acid Cleanser", type:"Face Wash",  price:"₹449",  reason:"2% Salicylic Acid penetrates deep into pores, dissolving the oil and dead skin that cause acne on oily skin.",                                                              link:"https://www.amazon.in/s?k=Minimalist+Salicylic+Acid+Cleanser" },
+        moisturizer:{ name:"Neutrogena Hydro Boost Gel Cream",   type:"Moisturizer",price:"₹750",  reason:"Hyaluronic acid gel provides intense hydration without adding oil — the perfect non-comedogenic pairing for acne-fighting routines.",                                       link:"https://www.amazon.in/s?k=Neutrogena+Hydro+Boost+Gel+Cream" },
+        sunscreen:  { name:"Re'equil Oxybenzone-Free SPF50",     type:"Sunscreen",  price:"₹565",  reason:"Chemical-free broad-spectrum SPF50 — non-comedogenic formula trusted by dermatologists for acne-prone oily skin.",                                                        link:"https://www.amazon.in/s?k=Reequil+Oxybenzone+Free+SPF50" }
+      },
+      high: {
+        facewash:   { name:"La Roche-Posay Effaclar Gel",        type:"Face Wash",  price:"₹1,450",reason:"Dermatologist-tested zinc purifying gel designed specifically for oily acne-prone skin — removes impurities without over-drying.",                                          link:"https://www.amazon.in/s?k=La+Roche+Posay+Effaclar+Gel" },
+        moisturizer:{ name:"Clinique Moisture Surge 100H",       type:"Moisturizer",price:"₹2,200",reason:"Auto-replenishing gel formula maintains skin hydrated for 100 hours. Completely oil-free — ideal for oily acne-prone skin.",                                                link:"https://www.amazon.in/s?k=Clinique+Moisture+Surge+100H" },
+        sunscreen:  { name:"Bioderma Photoderm Max SPF50+",      type:"Sunscreen",  price:"₹1,800",reason:"Pharmaceutical SPF50+ with anti-recurrence formula — prevents post-acne marks from darkening further with UV exposure.",                                                   link:"https://www.amazon.in/s?k=Bioderma+Photoderm+Max+SPF50" }
+      }
+    },
+    glow: {
+      low: {
+        facewash:   { name:"Garnier Bright Complete Vitamin C",  type:"Face Wash",  price:"₹149",  reason:"Vitamin C-infused cleanser removes dullness and unclogs oily pores — gentle daily brightening without irritation.",                                                          link:"https://www.amazon.in/s?k=Garnier+Bright+Complete+Vitamin+C+Face+Wash" },
+        moisturizer:{ name:"Olay Natural White Fairness Fluid",  type:"Moisturizer",price:"₹199",  reason:"Niacinamide-based lightweight fluid improves skin tone and delivers a natural glow without greasiness on oily skin.",                                                       link:"https://www.amazon.in/s?k=Olay+Natural+White+Fluid" },
+        sunscreen:  { name:"Lakme Sun Expert SPF50",             type:"Sunscreen",  price:"₹170",  reason:"Protects your freshly brightened skin from the UV rays that cause darkening — essential step in every glow routine.",                                                       link:"https://www.amazon.in/s?k=Lakme+Sun+Expert+SPF50" }
+      },
+      medium: {
+        facewash:   { name:"Dot & Key AHA BHA Exfoliating Cleanser",type:"Face Wash",price:"₹445", reason:"AHA + BHA dual-acid cleanser resurfaces dull oily skin and refines pores for immediate, visible glow improvement.",                                                       link:"https://www.amazon.in/s?k=Dot+Key+AHA+BHA+Cleanser" },
+        moisturizer:{ name:"Plum 3% Niacinamide & Rice Water Cream",type:"Moisturizer",price:"₹449",reason:"Niacinamide visibly evens skin tone and controls oily-skin shine — a powerhouse glow moisturizer with zero heaviness.",                                                  link:"https://www.amazon.in/s?k=Plum+Niacinamide+Moisturizer" },
+        sunscreen:  { name:"Minimalist SPF 60 PA++++",           type:"Sunscreen",  price:"₹549",  reason:"Highest PA++++ rating shields brightening results from UV reversal — preserves your glow throughout the day.",                                                              link:"https://www.amazon.in/s?k=Minimalist+SPF+60" }
+      },
+      high: {
+        facewash:   { name:"Tatcha The Rice Wash Cleanser",      type:"Face Wash",  price:"₹2,800",reason:"Japanese rice bran micro-exfoliates and brightens oily skin — leaves a dewy luminous finish after every single use.",                                                      link:"https://www.amazon.in/s?k=Tatcha+Rice+Wash" },
+        moisturizer:{ name:"Paula's Choice 10% Niacinamide Booster",type:"Moisturizer",price:"₹3,200",reason:"Clinical-strength 10% Niacinamide dramatically reduces pore visibility and maximises skin radiance with consistent use.",                                              link:"https://www.amazon.in/s?k=Paulas+Choice+Niacinamide+Booster" },
+        sunscreen:  { name:"Isntree Hyaluronic Acid Sun Cream SPF50",type:"Sunscreen",price:"₹1,800",reason:"Hydrating SPF50 adds a healthy glow-finish while fully protecting against the UV rays that reverse brightening results.",                                               link:"https://www.amazon.in/s?k=Isntree+Sun+Cream+SPF50" }
+      }
+    },
+    darkspots: {
+      low: {
+        facewash:   { name:"Himalaya Clear Complexion Wash",     type:"Face Wash",  price:"₹120",  reason:"Turmeric and White Dammar gently cleanse while fading existing dark spots on oily skin with regular use.",                                                                  link:"https://www.amazon.in/s?k=Himalaya+Clear+Complexion+Face+Wash" },
+        moisturizer:{ name:"Pond's White Beauty Cream",          type:"Moisturizer",price:"₹189",  reason:"B3 Vitamin Complex targets dark spots and uneven skin tone — affordable, widely proven for Indian oily skin types.",                                                       link:"https://www.amazon.in/s?k=Ponds+White+Beauty+Cream" },
+        sunscreen:  { name:"Neutrogena Ultra Sheer SPF50",       type:"Sunscreen",  price:"₹399",  reason:"Ultralight SPF50 stops UV from darkening existing spots — no dark spot treatment works without this as a daily habit.",                                                    link:"https://www.amazon.in/s?k=Neutrogena+Ultra+Sheer+SPF50" }
+      },
+      medium: {
+        facewash:   { name:"Minimalist 2% Salicylic Acid Face Wash",type:"Face Wash",price:"₹449", reason:"BHA exfoliates post-acne dark marks and hyperpigmentation while keeping oily skin clear and balanced.",                                                                    link:"https://www.amazon.in/s?k=Minimalist+Salicylic+Acid+Face+Wash" },
+        moisturizer:{ name:"Minimalist Alpha Arbutin 2% + HA",   type:"Moisturizer",price:"₹449",  reason:"Alpha Arbutin blocks melanin production at the source — the most clinically effective brightening ingredient for dark spots.",                                             link:"https://www.amazon.in/s?k=Minimalist+Alpha+Arbutin" },
+        sunscreen:  { name:"Re'equil Ultra Matte Dry Touch SPF50",type:"Sunscreen", price:"₹565",  reason:"Matte-finish SPF50 blocks UV rays that stimulate melanin — without daily SPF, dark spots will keep returning.",                                                            link:"https://www.amazon.in/s?k=Reequil+Ultra+Matte+SPF50" }
+      },
+      high: {
+        facewash:   { name:"La Roche-Posay Effaclar Gel",        type:"Face Wash",  price:"₹1,450",reason:"Zinc purifying gel cleanser primes oily skin so premium dark spot treatments absorb with maximum effectiveness.",                                                          link:"https://www.amazon.in/s?k=La+Roche+Posay+Effaclar+Gel" },
+        moisturizer:{ name:"SkinCeuticals Discoloration Defense", type:"Moisturizer",price:"₹6,800",reason:"Dermatology gold standard — Kojic Acid + Tranexamic Acid visibly fades all types of stubborn dark spots in 8 weeks.",                                                   link:"https://www.amazon.in/s?k=SkinCeuticals+Discoloration+Defense" },
+        sunscreen:  { name:"La Roche-Posay Anthelios SPF50+",    type:"Sunscreen",  price:"₹1,850",reason:"Pharmaceutical-grade UVA/UVB shield — prevents premium dark spot treatments from being undone by daily sun exposure.",                                                   link:"https://www.amazon.in/s?k=La+Roche+Posay+Anthelios" }
+      }
+    },
+    daily: {
+      low: {
+        facewash:   { name:"Himalaya Purifying Neem Face Wash",  type:"Face Wash",  price:"₹90",   reason:"Trusted daily cleanser for oily skin — removes excess sebum, sweat, and pollution effectively every morning.",                                                              link:"https://www.amazon.in/s?k=Himalaya+Neem+Face+Wash" },
+        moisturizer:{ name:"Pond's Super Light Gel",             type:"Moisturizer",price:"₹149",  reason:"Everyday lightweight gel that keeps oily skin balanced and hydrated throughout the day with zero greasy residue.",                                                          link:"https://www.amazon.in/s?k=Ponds+Super+Light+Gel" },
+        sunscreen:  { name:"Lakme Sun Expert SPF50",             type:"Sunscreen",  price:"₹170",  reason:"Reliable non-greasy SPF50 lightweight enough for daily oily skin use — consistent daily protection is non-negotiable.",                                                    link:"https://www.amazon.in/s?k=Lakme+Sun+Expert+SPF50" }
+      },
+      medium: {
+        facewash:   { name:"CeraVe Foaming Facial Cleanser",     type:"Face Wash",  price:"₹799",  reason:"Ceramides + Niacinamide maintain the skin barrier while thoroughly cleansing oily skin without over-stripping.",                                                            link:"https://www.amazon.in/s?k=CeraVe+Foaming+Facial+Cleanser" },
+        moisturizer:{ name:"Neutrogena Hydro Boost Water Gel",   type:"Moisturizer",price:"₹750",  reason:"Hyaluronic Acid gel locks in hydration for 24 hours — the ideal daily moisturizer for oily skin that needs balance.",                                                     link:"https://www.amazon.in/s?k=Neutrogena+Hydro+Boost+Water+Gel" },
+        sunscreen:  { name:"Minimalist SPF 60 PA++++",           type:"Sunscreen",  price:"₹549",  reason:"No white cast, no greasiness — the highest-rated daily SPF used by oily skin users across India.",                                                                          link:"https://www.amazon.in/s?k=Minimalist+SPF+60" }
+      },
+      high: {
+        facewash:   { name:"Tatcha The Rice Wash Cleanser",      type:"Face Wash",  price:"₹2,800",reason:"Luxurious daily cleanser that leaves oily skin soft, balanced and refined — never tight, never stripped.",                                                                  link:"https://www.amazon.in/s?k=Tatcha+Rice+Wash" },
+        moisturizer:{ name:"Clinique Moisture Surge 100H",       type:"Moisturizer",price:"₹2,200",reason:"Auto-replenishing hydration lasting 100 hours — the ultimate premium daily moisturizer for oily skin.",                                                                    link:"https://www.amazon.in/s?k=Clinique+Moisture+Surge" },
+        sunscreen:  { name:"Bioderma Photoderm Max SPF50+",      type:"Sunscreen",  price:"₹1,800",reason:"Premium photostable SPF50+ formula that works for 8+ hours — the gold standard for oily skin daily protection.",                                                          link:"https://www.amazon.in/s?k=Bioderma+Photoderm+Max" }
+      }
+    }
+  },
+
+  // ── DRY SKIN ─────────────────────────────────────────────
+  dry: {
+    acne: {
+      low: {
+        facewash:   { name:"Cetaphil Gentle Skin Cleanser",      type:"Face Wash",  price:"₹399",  reason:"Non-foaming gentle cleanser treats dry-skin acne without aggravating the barrier — dermatologists' #1 pick worldwide.",                                                    link:"https://www.amazon.in/s?k=Cetaphil+Gentle+Skin+Cleanser" },
+        moisturizer:{ name:"Vaseline Light Hydrating Lotion",    type:"Moisturizer",price:"₹199",  reason:"Non-comedogenic lightweight lotion provides essential hydration for dry skin without causing or worsening breakouts.",                                                      link:"https://www.amazon.in/s?k=Vaseline+Light+Hydrating+Lotion" },
+        sunscreen:  { name:"Lotus Herbals SafeSun SPF 30",       type:"Sunscreen",  price:"₹299",  reason:"Hydrating SPF30 with mango butter — nourishes dry skin while protecting against UV-triggered inflammation and acne.",                                                       link:"https://www.amazon.in/s?k=Lotus+Herbals+SafeSun+SPF30" }
+      },
+      medium: {
+        facewash:   { name:"CeraVe Hydrating Facial Cleanser",   type:"Face Wash",  price:"₹799",  reason:"3 essential ceramides restore the damaged barrier on dry acne-prone skin. Deeply cleanses without stripping natural oils.",                                                link:"https://www.amazon.in/s?k=CeraVe+Hydrating+Cleanser" },
+        moisturizer:{ name:"Neutrogena Hydro Boost Water Gel",   type:"Moisturizer",price:"₹750",  reason:"Hyaluronic Acid deeply hydrates dry skin while the non-comedogenic formula ensures existing acne doesn't worsen.",                                                         link:"https://www.amazon.in/s?k=Neutrogena+Hydro+Boost" },
+        sunscreen:  { name:"Neutrogena Ultra Sheer SPF50",       type:"Sunscreen",  price:"₹399",  reason:"Ultra-light SPF50 prevents sun-triggered flare-ups without drying out already moisture-deprived dry skin.",                                                                link:"https://www.amazon.in/s?k=Neutrogena+Ultra+Sheer+SPF50" }
+      },
+      high: {
+        facewash:   { name:"La Roche-Posay Toleriane Hydrating Cleanser",type:"Face Wash",price:"₹1,600",reason:"Prebiotic Thermal Spring Water heals dry acne-prone skin — restores the microbiome while gently cleansing.",                                                       link:"https://www.amazon.in/s?k=La+Roche+Posay+Toleriane+Cleanser" },
+        moisturizer:{ name:"La Roche-Posay Toleriane Double Repair",type:"Moisturizer",price:"₹2,200",reason:"Ceramides + Niacinamide rebuild the damaged barrier in dry acne-prone skin — clinically proven results in 24 hours.",                                                  link:"https://www.amazon.in/s?k=La+Roche+Posay+Toleriane+Double+Repair" },
+        sunscreen:  { name:"La Roche-Posay Anthelios SPF50+",    type:"Sunscreen",  price:"₹1,850",reason:"Hydrating Mexoryl-technology SPF50+ — specifically recommended for acne-prone dry skin by French dermatologists.",                                                         link:"https://www.amazon.in/s?k=La+Roche+Posay+Anthelios" }
+      }
+    },
+    glow: {
+      low: {
+        facewash:   { name:"Lakme Blush & Glow Strawberry Gel",  type:"Face Wash",  price:"₹155",  reason:"Hydrating fruit extract gel cleanser brightens dry dull skin — gently removes dullness without causing any tightness.",                                                    link:"https://www.amazon.in/s?k=Lakme+Blush+Glow+Face+Wash" },
+        moisturizer:{ name:"Olay Total Effects 7-in-1",          type:"Moisturizer",price:"₹599",  reason:"VitaNiacin complex fights dullness in dry skin — 7 anti-aging benefits including instant luminosity in one product.",                                                      link:"https://www.amazon.in/s?k=Olay+Total+Effects+7+in+1" },
+        sunscreen:  { name:"Lotus Herbals SafeSun SPF 30",       type:"Sunscreen",  price:"₹299",  reason:"Moisturising SPF30 protects your glow while nourishing dry skin — both hydration and sun protection in one step.",                                                         link:"https://www.amazon.in/s?k=Lotus+SafeSun+SPF30" }
+      },
+      medium: {
+        facewash:   { name:"Dot & Key Vitamin C Brightening Cleanser",type:"Face Wash",price:"₹445",reason:"Vitamin C + Hyaluronic Acid cleanser — brightens dull dry skin while maintaining essential moisture balance.",                                                           link:"https://www.amazon.in/s?k=Dot+Key+Vitamin+C+Face+Wash" },
+        moisturizer:{ name:"Plum Vitamin C & Kakadu Brightening Gel",type:"Moisturizer",price:"₹995",reason:"15% Vitamin C equivalent provides intense brightening and deep hydration — the ideal glow moisturizer for dry skin.",                                                   link:"https://www.amazon.in/s?k=Plum+Vitamin+C+Moisturizer" },
+        sunscreen:  { name:"Minimalist SPF 60 PA++++",           type:"Sunscreen",  price:"₹549",  reason:"Highest PA++++ rating shields brightening results from UV reversal — essential for dry skin glow routines.",                                                               link:"https://www.amazon.in/s?k=Minimalist+SPF+60" }
+      },
+      high: {
+        facewash:   { name:"Tatcha The Rice Wash Cleanser",      type:"Face Wash",  price:"₹2,800",reason:"Japanese rice bran micro-exfoliates and brightens dry skin — delivers a visible luminous finish after every use.",                                                          link:"https://www.amazon.in/s?k=Tatcha+Rice+Wash" },
+        moisturizer:{ name:"Estée Lauder Advanced Night Repair", type:"Moisturizer",price:"₹6,500",reason:"ChronoluxCB Technology multiplies skin's natural repair overnight — dry skin wakes up visibly brighter and glowing.",                                                      link:"https://www.amazon.in/s?k=Estee+Lauder+Advanced+Night+Repair" },
+        sunscreen:  { name:"Isntree Hyaluronic Acid Sun Cream SPF50",type:"Sunscreen",price:"₹1,800",reason:"Hydrating SPF50 with a luminous finish — adds a healthy glow while protecting dry skin from UV damage.",                                                                link:"https://www.amazon.in/s?k=Isntree+Sun+Cream+SPF50" }
+      }
+    },
+    darkspots: {
+      low: {
+        facewash:   { name:"Cetaphil Gentle Skin Cleanser",      type:"Face Wash",  price:"₹399",  reason:"Gentle non-stripping cleanser prepares dry skin without barrier damage — essential before dark spot treatments.",                                                           link:"https://www.amazon.in/s?k=Cetaphil+Gentle+Cleanser" },
+        moisturizer:{ name:"Pond's White Beauty Cream",          type:"Moisturizer",price:"₹189",  reason:"B3 Vitamin Complex fights dark spots with consistent daily use — affordable and effective for Indian dry skin.",                                                            link:"https://www.amazon.in/s?k=Ponds+White+Beauty+Cream" },
+        sunscreen:  { name:"Lotus Herbals SafeSun SPF 30",       type:"Sunscreen",  price:"₹299",  reason:"Moisturising SPF30 prevents UV from triggering more melanin — critical step for any dark spot reduction to work.",                                                         link:"https://www.amazon.in/s?k=Lotus+SafeSun+SPF30" }
+      },
+      medium: {
+        facewash:   { name:"CeraVe Hydrating Facial Cleanser",   type:"Face Wash",  price:"₹799",  reason:"Ceramides maintain the moisture barrier on dry skin, ensuring dark spot actives penetrate and work effectively.",                                                          link:"https://www.amazon.in/s?k=CeraVe+Hydrating+Cleanser" },
+        moisturizer:{ name:"Minimalist Alpha Arbutin 2% + HA",   type:"Moisturizer",price:"₹449",  reason:"Alpha Arbutin inhibits melanin production while Hyaluronic Acid adds critical moisture for dry skin's daily needs.",                                                      link:"https://www.amazon.in/s?k=Minimalist+Alpha+Arbutin" },
+        sunscreen:  { name:"Neutrogena Ultra Sheer SPF50",       type:"Sunscreen",  price:"₹399",  reason:"Consistent SPF50 protection is the single most important step in any dark spot reduction routine — don't skip it.",                                                        link:"https://www.amazon.in/s?k=Neutrogena+Ultra+Sheer" }
+      },
+      high: {
+        facewash:   { name:"La Roche-Posay Toleriane Hydrating Cleanser",type:"Face Wash",price:"₹1,600",reason:"Barrier-restoring cleanser ensures dry skin absorbs premium dark spot treatments without any irritation.",                                                          link:"https://www.amazon.in/s?k=La+Roche+Posay+Toleriane+Cleanser" },
+        moisturizer:{ name:"SkinCeuticals Discoloration Defense", type:"Moisturizer",price:"₹6,800",reason:"Kojic Acid + Tranexamic Acid — dermatology's gold standard for fading all types of stubborn dark spots in 8 weeks.",                                                   link:"https://www.amazon.in/s?k=SkinCeuticals+Discoloration+Defense" },
+        sunscreen:  { name:"La Roche-Posay Anthelios SPF50+",    type:"Sunscreen",  price:"₹1,850",reason:"Pharmaceutical-grade hydrating SPF50+ — nourishes dry skin while shielding dark spot treatments from UV reversal.",                                                       link:"https://www.amazon.in/s?k=La+Roche+Posay+Anthelios" }
+      }
+    },
+    daily: {
+      low: {
+        facewash:   { name:"Cetaphil Gentle Skin Cleanser",      type:"Face Wash",  price:"₹399",  reason:"The most recommended daily cleanser for dry skin worldwide — gently maintains moisture without soap stripping.",                                                             link:"https://www.amazon.in/s?k=Cetaphil+Gentle+Cleanser" },
+        moisturizer:{ name:"Vaseline Intensive Care Lotion",     type:"Moisturizer",price:"₹199",  reason:"Micro-droplets of Vaseline lock in moisture for 24 hours — the trusted affordable daily essential for dry skin.",                                                          link:"https://www.amazon.in/s?k=Vaseline+Intensive+Care+Lotion" },
+        sunscreen:  { name:"Lotus Herbals SafeSun SPF 30",       type:"Sunscreen",  price:"₹299",  reason:"Mango butter-enriched SPF30 nourishes dry skin daily while providing reliable protection from sun damage.",                                                                link:"https://www.amazon.in/s?k=Lotus+SafeSun+SPF30" }
+      },
+      medium: {
+        facewash:   { name:"CeraVe Hydrating Facial Cleanser",   type:"Face Wash",  price:"₹799",  reason:"Daily cleanser that replenishes ceramides while cleansing — leaves dry skin clean without any tight sensation.",                                                           link:"https://www.amazon.in/s?k=CeraVe+Hydrating+Cleanser" },
+        moisturizer:{ name:"CeraVe Moisturizing Cream",          type:"Moisturizer",price:"₹849",  reason:"3 ceramides + Hyaluronic Acid in a rich cream — the definitive daily moisturizer recommended for dry skin globally.",                                                     link:"https://www.amazon.in/s?k=CeraVe+Moisturizing+Cream" },
+        sunscreen:  { name:"Neutrogena Ultra Sheer SPF50",       type:"Sunscreen",  price:"₹399",  reason:"Lightweight SPF50 that doesn't add heaviness — non-comedogenic daily protection for dry skin routines.",                                                                   link:"https://www.amazon.in/s?k=Neutrogena+Ultra+Sheer+SPF50" }
+      },
+      high: {
+        facewash:   { name:"La Roche-Posay Toleriane Hydrating Cleanser",type:"Face Wash",price:"₹1,600",reason:"Premium prebiotic daily cleanser — leaves dry skin soft, comfortable, and microbiome-balanced every morning.",                                                      link:"https://www.amazon.in/s?k=La+Roche+Posay+Toleriane+Cleanser" },
+        moisturizer:{ name:"La Roche-Posay Toleriane Double Repair",type:"Moisturizer",price:"₹2,200",reason:"Ceramides + Niacinamide repair and protect dry skin daily — clinically proven for immediate barrier relief.",                                                           link:"https://www.amazon.in/s?k=La+Roche+Posay+Toleriane+Double+Repair" },
+        sunscreen:  { name:"Isntree Hyaluronic Acid Sun Cream SPF50",type:"Sunscreen",price:"₹1,800",reason:"Hyaluronic acid in the SPF formula adds extra daily hydration while providing full SPF50 broad-spectrum coverage.",                                                     link:"https://www.amazon.in/s?k=Isntree+Sun+Cream+SPF50" }
+      }
+    }
+  },
+
+  // ── COMBINATION SKIN ─────────────────────────────────────
+  combination: {
+    acne: {
+      low: {
+        facewash:   { name:"Pond's Pure White Deep Cleansing Foam",type:"Face Wash", price:"₹139", reason:"Activated charcoal draws out impurities from the oily T-zone without drying the dry cheek areas of combination skin.",                                                     link:"https://www.amazon.in/s?k=Ponds+Pure+White+Face+Wash" },
+        moisturizer:{ name:"Plum Hello Aloe Caring Day Moisturizer",type:"Moisturizer",price:"₹349",reason:"Aloe vera-based lightweight formula balances combination skin — hydrates dry areas without adding oil to the T-zone.",                                                   link:"https://www.amazon.in/s?k=Plum+Hello+Aloe+Moisturizer" },
+        sunscreen:  { name:"Lakme Sun Expert SPF50",             type:"Sunscreen",  price:"₹170",  reason:"Matte-finish SPF50 controls T-zone shine while protecting the whole face from acne-triggering UV exposure.",                                                               link:"https://www.amazon.in/s?k=Lakme+Sun+Expert+SPF50" }
+      },
+      medium: {
+        facewash:   { name:"Dot & Key AHA BHA Exfoliating Cleanser",type:"Face Wash",price:"₹445", reason:"AHA works on dry cheek areas while BHA targets the oily T-zone — a dual-acid cleanser perfectly built for combination acne.",                                            link:"https://www.amazon.in/s?k=Dot+Key+AHA+BHA+Cleanser" },
+        moisturizer:{ name:"Neutrogena Hydro Boost Water Gel",   type:"Moisturizer",price:"₹750",  reason:"Lightweight water gel balances combination skin — deeply hydrates dry areas without adding any oil to T-zone.",                                                            link:"https://www.amazon.in/s?k=Neutrogena+Hydro+Boost+Gel" },
+        sunscreen:  { name:"Re'equil Oxybenzone-Free SPF50",     type:"Sunscreen",  price:"₹565",  reason:"Non-comedogenic matte SPF50 — designed for skin that breaks out easily, ideal for combination and acne-prone skin.",                                                      link:"https://www.amazon.in/s?k=Reequil+SPF50" }
+      },
+      high: {
+        facewash:   { name:"Clinique Rinse-Off Foaming Cleanser",type:"Face Wash",  price:"₹1,800",reason:"Allergy-tested formula cleanses oily zones while fully respecting dry zones — the premium choice for combination skin.",                                                   link:"https://www.amazon.in/s?k=Clinique+Rinse+Off+Foaming+Cleanser" },
+        moisturizer:{ name:"Origins GinZing Refreshing Moisturizer",type:"Moisturizer",price:"₹2,800",reason:"Caffeine + Ginseng balances combination skin — energises dull dry areas while regulating sebum in the T-zone.",                                                       link:"https://www.amazon.in/s?k=Origins+GinZing+Moisturizer" },
+        sunscreen:  { name:"Bioderma Photoderm Max SPF50+",      type:"Sunscreen",  price:"₹1,800",reason:"Dermatological SPF50+ with sebum control — designed for combination and acne-prone skin, zero pore-clogging.",                                                            link:"https://www.amazon.in/s?k=Bioderma+Photoderm" }
+      }
+    },
+    glow: {
+      low: {
+        facewash:   { name:"Garnier Micellar Cleansing Water",   type:"Face Wash",  price:"₹199",  reason:"Micellar water gently lifts dullness and pollution from combination skin without disrupting the moisture balance.",                                                         link:"https://www.amazon.in/s?k=Garnier+Micellar+Water" },
+        moisturizer:{ name:"Plum Green Tea Day Moisturizer",     type:"Moisturizer",price:"₹345",  reason:"Green tea antioxidants fight free-radical dullness — oil-free formula perfect for combination skin's glow goal.",                                                          link:"https://www.amazon.in/s?k=Plum+Green+Tea+Moisturizer" },
+        sunscreen:  { name:"Lotus Herbals SafeSun SPF 30",       type:"Sunscreen",  price:"₹299",  reason:"Gentle SPF30 with a dewy finish preserves your brightened combination skin against daily UV exposure.",                                                                    link:"https://www.amazon.in/s?k=Lotus+SafeSun+SPF30" }
+      },
+      medium: {
+        facewash:   { name:"Dot & Key Vitamin C Brightening Cleanser",type:"Face Wash",price:"₹445",reason:"Vitamin C targets dullness on combination skin while the gentle formula keeps the T-zone balanced and clear.",                                                           link:"https://www.amazon.in/s?k=Dot+Key+Vitamin+C+Cleanser" },
+        moisturizer:{ name:"Plum 3% Niacinamide & Rice Water Cream",type:"Moisturizer",price:"₹449",reason:"Niacinamide brightens and minimises pores across combination skin — one product for both dry and oily zones.",                                                           link:"https://www.amazon.in/s?k=Plum+Niacinamide" },
+        sunscreen:  { name:"Minimalist SPF 60 PA++++",           type:"Sunscreen",  price:"₹549",  reason:"Highest PA rating shields brightening results from UV reversal — essential for combination skin glow routines.",                                                           link:"https://www.amazon.in/s?k=Minimalist+SPF+60" }
+      },
+      high: {
+        facewash:   { name:"Tatcha The Rice Wash Cleanser",      type:"Face Wash",  price:"₹2,800",reason:"Micro-exfoliating rice bran brightens combination skin uniformly — leaves both T-zone and dry areas luminous.",                                                             link:"https://www.amazon.in/s?k=Tatcha+Rice+Wash" },
+        moisturizer:{ name:"Origins GinZing Refreshing Moisturizer",type:"Moisturizer",price:"₹2,800",reason:"Ginseng + Caffeine energise dull combination skin for all-day natural glow — perfectly balanced, no greasy residue.",                                                  link:"https://www.amazon.in/s?k=Origins+GinZing+Moisturizer" },
+        sunscreen:  { name:"Isntree Hyaluronic Acid Sun Cream SPF50",type:"Sunscreen",price:"₹1,800",reason:"Dewy-finish SPF50 adds glow while protecting combination skin from the UV that reverses brightening progress.",                                                         link:"https://www.amazon.in/s?k=Isntree+Sun+SPF50" }
+      }
+    },
+    darkspots: {
+      low: {
+        facewash:   { name:"Himalaya Clear Complexion Wash",     type:"Face Wash",  price:"₹120",  reason:"Turmeric and White Dammar clear dark spots on combination skin without irritating the already-dry cheek areas.",                                                           link:"https://www.amazon.in/s?k=Himalaya+Clear+Complexion+Face+Wash" },
+        moisturizer:{ name:"Pond's White Beauty Cream",          type:"Moisturizer",price:"₹189",  reason:"Affordable B3 Vitamin Complex visibly reduces dark spots across combination skin over 4 weeks of consistent use.",                                                         link:"https://www.amazon.in/s?k=Ponds+White+Beauty" },
+        sunscreen:  { name:"Neutrogena Ultra Sheer SPF50",       type:"Sunscreen",  price:"₹399",  reason:"Essential SPF50 stops UV from stimulating melanin production — no dark spot routine delivers results without this.",                                                        link:"https://www.amazon.in/s?k=Neutrogena+Ultra+Sheer" }
+      },
+      medium: {
+        facewash:   { name:"Minimalist 2% Salicylic Acid Face Wash",type:"Face Wash",price:"₹449", reason:"BHA exfoliates post-inflammatory dark marks on combination skin without over-drying the dry cheek areas.",                                                                 link:"https://www.amazon.in/s?k=Minimalist+Salicylic+Acid" },
+        moisturizer:{ name:"Minimalist Alpha Arbutin 2% + HA",   type:"Moisturizer",price:"₹449",  reason:"Alpha Arbutin blocks melanin while HA hydrates dry cheeks — perfect active ingredient balance for combination skin.",                                                     link:"https://www.amazon.in/s?k=Minimalist+Alpha+Arbutin" },
+        sunscreen:  { name:"Re'equil Ultra Matte Dry Touch SPF50",type:"Sunscreen", price:"₹565",  reason:"Controls T-zone shine while blocking the UV rays that reactivate dark spots — the ideal combination skin SPF.",                                                            link:"https://www.amazon.in/s?k=Reequil+Ultra+Matte" }
+      },
+      high: {
+        facewash:   { name:"Clinique Rinse-Off Foaming Cleanser",type:"Face Wash",  price:"₹1,800",reason:"Balanced formula cleanses combination skin without disturbing areas where dark spot actives are actively working.",                                                         link:"https://www.amazon.in/s?k=Clinique+Rinse+Off+Cleanser" },
+        moisturizer:{ name:"SkinCeuticals Discoloration Defense", type:"Moisturizer",price:"₹6,800",reason:"Clinical Kojic Acid + Tranexamic Acid targets all dark spots on combination skin with visible results in 8 weeks.",                                                     link:"https://www.amazon.in/s?k=SkinCeuticals+Discoloration+Defense" },
+        sunscreen:  { name:"La Roche-Posay Anthelios SPF50+",    type:"Sunscreen",  price:"₹1,850",reason:"Pharmaceutical SPF50+ with sebum control — protects combination skin while guarding dark spot treatments.",                                                               link:"https://www.amazon.in/s?k=La+Roche+Posay+Anthelios" }
+      }
+    },
+    daily: {
+      low: {
+        facewash:   { name:"Pond's Pure White Deep Cleansing Foam",type:"Face Wash", price:"₹139", reason:"Everyday charcoal cleanser keeps combination skin balanced — removes T-zone oil without drying the cheeks.",                                                               link:"https://www.amazon.in/s?k=Ponds+Pure+White+Face+Wash" },
+        moisturizer:{ name:"Plum Hello Aloe Caring Day Moisturizer",type:"Moisturizer",price:"₹349",reason:"Aloe + Green Tea provide the perfect daily balance for combination skin — light, fast-absorbing, no compromise.",                                                        link:"https://www.amazon.in/s?k=Plum+Hello+Aloe+Moisturizer" },
+        sunscreen:  { name:"Lakme Sun Expert SPF50",             type:"Sunscreen",  price:"₹170",  reason:"Daily SPF50 that controls T-zone shine while protecting the whole face — trusted daily combination skin pick.",                                                             link:"https://www.amazon.in/s?k=Lakme+Sun+Expert+SPF50" }
+      },
+      medium: {
+        facewash:   { name:"Dot & Key AHA BHA Exfoliating Cleanser",type:"Face Wash",price:"₹445", reason:"Daily dual-acid cleanser keeps combination skin consistently balanced and clear — gentle enough for every single day.",                                                   link:"https://www.amazon.in/s?k=Dot+Key+AHA+BHA" },
+        moisturizer:{ name:"Neutrogena Hydro Boost Water Gel",   type:"Moisturizer",price:"₹750",  reason:"Hyaluronic acid water gel — the perfect daily moisturizer for combination skin. Hydrates without oiliness.",                                                               link:"https://www.amazon.in/s?k=Neutrogena+Hydro+Boost" },
+        sunscreen:  { name:"Minimalist SPF 60 PA++++",           type:"Sunscreen",  price:"₹549",  reason:"No white cast, no greasiness — India's most popular daily SPF for combination skin users.",                                                                                link:"https://www.amazon.in/s?k=Minimalist+SPF60" }
+      },
+      high: {
+        facewash:   { name:"Clinique Rinse-Off Foaming Cleanser",type:"Face Wash",  price:"₹1,800",reason:"Premium daily cleanser that balances combination skin perfectly — allergy-tested for consistent safe daily use.",                                                           link:"https://www.amazon.in/s?k=Clinique+Rinse+Off+Cleanser" },
+        moisturizer:{ name:"Origins GinZing Refreshing Moisturizer",type:"Moisturizer",price:"₹2,800",reason:"The ultimate daily moisturizer for combination skin — energising, brightening, and balanced for every skin zone.",                                                     link:"https://www.amazon.in/s?k=Origins+GinZing" },
+        sunscreen:  { name:"Bioderma Photoderm Max SPF50+",      type:"Sunscreen",  price:"₹1,800",reason:"Premium daily SPF50+ for combination skin — photostable protection with a clean, balanced, non-greasy texture.",                                                          link:"https://www.amazon.in/s?k=Bioderma+Photoderm+Max" }
+      }
+    }
+  },
+
+  // ── SENSITIVE SKIN ───────────────────────────────────────
+  sensitive: {
+    acne: {
+      low: {
+        facewash:   { name:"Simple Moisturizing Facial Wash",    type:"Face Wash",  price:"₹299",  reason:"No fragrance, no alcohol, no dyes — Simple's formula cleanses sensitive acne-prone skin with zero risk of reaction.",                                                      link:"https://www.amazon.in/s?k=Simple+Moisturizing+Facial+Wash" },
+        moisturizer:{ name:"Cetaphil Daily Advance Ultra Lotion",type:"Moisturizer",price:"₹399",  reason:"Hypoallergenic formula hydrates sensitive acne-prone skin without any irritation or pore-clogging ingredients.",                                                           link:"https://www.amazon.in/s?k=Cetaphil+Daily+Advance+Lotion" },
+        sunscreen:  { name:"Lotus Herbals SafeSun SPF 30",       type:"Sunscreen",  price:"₹299",  reason:"Mineral-based SPF30 with mango butter — zero stinging, zero redness on sensitive reactive acne-prone skin.",                                                               link:"https://www.amazon.in/s?k=Lotus+Herbals+SafeSun+SPF30" }
+      },
+      medium: {
+        facewash:   { name:"Bioderma Sensibio Gel Moussant",     type:"Face Wash",  price:"₹995",  reason:"Dermatology's most trusted sensitive cleanser — Skin Tolerance™ formula guarantees zero adverse reaction risk.",                                                           link:"https://www.amazon.in/s?k=Bioderma+Sensibio+Gel+Moussant" },
+        moisturizer:{ name:"Bioderma Hydrabio Gel Crème",        type:"Moisturizer",price:"₹1,200",reason:"Aquagenium™ technology uniquely hydrates sensitive skin by activating its own water channels — zero irritation formula.",                                                 link:"https://www.amazon.in/s?k=Bioderma+Hydrabio+Gel+Creme" },
+        sunscreen:  { name:"Neutrogena Ultra Sheer SPF50",       type:"Sunscreen",  price:"₹399",  reason:"Fragrance-free lightweight SPF50 that doesn't sting or irritate reactive sensitive skin prone to acne.",                                                                   link:"https://www.amazon.in/s?k=Neutrogena+Ultra+Sheer+SPF50" }
+      },
+      high: {
+        facewash:   { name:"Avène Extremely Gentle Cleanser",    type:"Face Wash",  price:"₹1,200",reason:"Formulated with Avène Thermal Spring Water — the gold standard cleanser for hypersensitive acne-prone skin.",                                                              link:"https://www.amazon.in/s?k=Avene+Extremely+Gentle+Cleanser" },
+        moisturizer:{ name:"La Roche-Posay Toleriane Sensitive Fluid",type:"Moisturizer",price:"₹2,400",reason:"Neurosensine + Ceramides instantly calm reactive sensitive skin — clinically proven redness reduction in 24h.",                                                      link:"https://www.amazon.in/s?k=La+Roche+Posay+Toleriane+Sensitive" },
+        sunscreen:  { name:"La Roche-Posay Anthelios SPF50+",    type:"Sunscreen",  price:"₹1,850",reason:"Fragrance-free pharmaceutical SPF50+ — zero irritants, zero white cast, dermatologist's choice for sensitive skin.",                                                      link:"https://www.amazon.in/s?k=La+Roche+Posay+Anthelios" }
+      }
+    },
+    glow: {
+      low: {
+        facewash:   { name:"Simple Moisturizing Facial Wash",    type:"Face Wash",  price:"₹299",  reason:"Clean fragrance-free formula brightens sensitive skin without triggering irritation — the safest glow foundation.",                                                         link:"https://www.amazon.in/s?k=Simple+Moisturizing+Facial+Wash" },
+        moisturizer:{ name:"Olay Total Effects 7-in-1",          type:"Moisturizer",price:"₹599",  reason:"VitaNiacin formula brightens sensitive skin safely — 7 anti-aging and glow benefits in one hypoallergenic product.",                                                      link:"https://www.amazon.in/s?k=Olay+Total+Effects" },
+        sunscreen:  { name:"Lotus Herbals SafeSun SPF 30",       type:"Sunscreen",  price:"₹299",  reason:"Sensitive skin-friendly SPF30 that protects brightening results without redness or reaction.",                                                                              link:"https://www.amazon.in/s?k=Lotus+SafeSun+SPF30" }
+      },
+      medium: {
+        facewash:   { name:"Bioderma Sensibio Gel Moussant",     type:"Face Wash",  price:"₹995",  reason:"Calming Boerhavia Diffusa extract brightens sensitive skin while the patented formula eliminates all reactivity risk.",                                                    link:"https://www.amazon.in/s?k=Bioderma+Sensibio+Gel" },
+        moisturizer:{ name:"Plum Vitamin C & Kakadu Brightening Gel",type:"Moisturizer",price:"₹995",reason:"Stabilised fragrance-free Vitamin C on sensitive skin — brightens without inflammation or barrier damage.",                                                             link:"https://www.amazon.in/s?k=Plum+Vitamin+C+Moisturizer" },
+        sunscreen:  { name:"Neutrogena Ultra Sheer SPF50",       type:"Sunscreen",  price:"₹399",  reason:"Fragrance-free SPF50 that never stings sensitive skin — crucial daily step for protecting brightening results.",                                                           link:"https://www.amazon.in/s?k=Neutrogena+Ultra+Sheer" }
+      },
+      high: {
+        facewash:   { name:"Avène Extremely Gentle Cleanser",    type:"Face Wash",  price:"₹1,200",reason:"Thermal Spring Water calms while gently brightening hypersensitive skin — the safest premium brightening cleanser.",                                                       link:"https://www.amazon.in/s?k=Avene+Gentle+Cleanser" },
+        moisturizer:{ name:"Estée Lauder Advanced Night Repair", type:"Moisturizer",price:"₹6,500",reason:"50+ years of dermatological testing — hypoallergenic Night Repair delivers a visible glow on sensitive skin safely.",                                                      link:"https://www.amazon.in/s?k=Estee+Lauder+Night+Repair" },
+        sunscreen:  { name:"Isntree Hyaluronic Acid Sun Cream SPF50",type:"Sunscreen",price:"₹1,800",reason:"Sensitive skin-friendly SPF50 with radiant finish — no fragrance, no alcohol, no irritation guarantee.",                                                               link:"https://www.amazon.in/s?k=Isntree+Sun+Cream" }
+      }
+    },
+    darkspots: {
+      low: {
+        facewash:   { name:"Simple Moisturizing Facial Wash",    type:"Face Wash",  price:"₹299",  reason:"Fragrance-free gentle cleanser preps sensitive skin for dark spot treatments without any risk of flare-ups.",                                                               link:"https://www.amazon.in/s?k=Simple+Moisturizing+Facial+Wash" },
+        moisturizer:{ name:"Pond's White Beauty Cream",          type:"Moisturizer",price:"₹189",  reason:"B3 Vitamin complex gently targets dark spots — mild enough for sensitive skin daily use, no irritation.",                                                                   link:"https://www.amazon.in/s?k=Ponds+White+Beauty+Cream" },
+        sunscreen:  { name:"Lotus Herbals SafeSun SPF 30",       type:"Sunscreen",  price:"₹299",  reason:"Gentle SPF30 stops UV from producing more melanin — an essential non-negotiable step in any dark spot routine.",                                                           link:"https://www.amazon.in/s?k=Lotus+SafeSun+SPF30" }
+      },
+      medium: {
+        facewash:   { name:"Bioderma Sensibio Gel Moussant",     type:"Face Wash",  price:"₹995",  reason:"Anti-irritant formula for sensitive skin — cleanses without disrupting dark spot treatments that need uninterrupted skin.",                                                 link:"https://www.amazon.in/s?k=Bioderma+Sensibio+Gel" },
+        moisturizer:{ name:"Minimalist Alpha Arbutin 2% + HA",   type:"Moisturizer",price:"₹449",  reason:"Alpha Arbutin is the gentlest dark spot ingredient — safe for sensitive skin with clinically zero irritation risk.",                                                       link:"https://www.amazon.in/s?k=Minimalist+Alpha+Arbutin" },
+        sunscreen:  { name:"Neutrogena Ultra Sheer SPF50",       type:"Sunscreen",  price:"₹399",  reason:"Fragrance-free SPF50 — blocks the UV that triggers dark spots without any irritation to sensitive skin.",                                                                   link:"https://www.amazon.in/s?k=Neutrogena+Ultra+Sheer" }
+      },
+      high: {
+        facewash:   { name:"Avène Extremely Gentle Cleanser",    type:"Face Wash",  price:"₹1,200",reason:"The kindest daily cleanser for hypersensitive dark spot-prone skin — zero aggravation to reactive skin ever.",                                                              link:"https://www.amazon.in/s?k=Avene+Gentle+Cleanser" },
+        moisturizer:{ name:"SkinCeuticals Discoloration Defense", type:"Moisturizer",price:"₹6,800",reason:"Dermatology gold standard for dark spots — Tranexamic Acid is among the gentlest yet most effective brightening actives.",                                               link:"https://www.amazon.in/s?k=SkinCeuticals+Discoloration+Defense" },
+        sunscreen:  { name:"La Roche-Posay Anthelios SPF50+",    type:"Sunscreen",  price:"₹1,850",reason:"Fragrance-free pharmaceutical SPF50+ — zero irritants, maximum UV protection for sensitive dark spot-prone skin.",                                                         link:"https://www.amazon.in/s?k=La+Roche+Posay+Anthelios" }
+      }
+    },
+    daily: {
+      low: {
+        facewash:   { name:"Simple Moisturizing Facial Wash",    type:"Face Wash",  price:"₹299",  reason:"The world's most trusted daily cleanser for sensitive skin — clean ingredients, consistent zero-reaction guarantee.",                                                       link:"https://www.amazon.in/s?k=Simple+Moisturizing+Facial+Wash" },
+        moisturizer:{ name:"Cetaphil Daily Advance Ultra Lotion",type:"Moisturizer",price:"₹399",  reason:"Dermatologist-developed daily moisturizer for sensitive skin — hypoallergenic, fragrance-free, and clinically tested.",                                                    link:"https://www.amazon.in/s?k=Cetaphil+Daily+Advance+Lotion" },
+        sunscreen:  { name:"Lotus Herbals SafeSun SPF 30",       type:"Sunscreen",  price:"₹299",  reason:"Daily mineral SPF30 gentle enough for the most reactive sensitive skin — no stinging, no burning, no compromise.",                                                         link:"https://www.amazon.in/s?k=Lotus+SafeSun+SPF30" }
+      },
+      medium: {
+        facewash:   { name:"Bioderma Sensibio Gel Moussant",     type:"Face Wash",  price:"₹995",  reason:"The world's best-selling sensitive skin cleanser — Skin Tolerance™ formula used by dermatologists in 90+ countries.",                                                      link:"https://www.amazon.in/s?k=Bioderma+Sensibio+Gel" },
+        moisturizer:{ name:"Bioderma Hydrabio Gel Crème",        type:"Moisturizer",price:"₹1,200",reason:"Aquagenium™ activates skin's own hydration mechanism — gentle enough for the most reactive sensitive skin daily.",                                                        link:"https://www.amazon.in/s?k=Bioderma+Hydrabio+Gel+Creme" },
+        sunscreen:  { name:"Neutrogena Ultra Sheer SPF50",       type:"Sunscreen",  price:"₹399",  reason:"Clean fragrance-free SPF50 — the most widely recommended daily sunscreen for sensitive skin types.",                                                                        link:"https://www.amazon.in/s?k=Neutrogena+Ultra+Sheer+SPF50" }
+      },
+      high: {
+        facewash:   { name:"Avène Extremely Gentle Cleanser",    type:"Face Wash",  price:"₹1,200",reason:"Thermal Spring Water daily cleanser — dermatologists prescribe this for hypersensitive skin as the gold standard.",                                                         link:"https://www.amazon.in/s?k=Avene+Gentle+Cleanser" },
+        moisturizer:{ name:"La Roche-Posay Toleriane Sensitive Fluid",type:"Moisturizer",price:"₹2,400",reason:"Neurosensine calms sensitive skin daily — the premium choice for reactive skin needing consistent gentle care.",                                                      link:"https://www.amazon.in/s?k=La+Roche+Posay+Toleriane+Sensitive" },
+        sunscreen:  { name:"La Roche-Posay Anthelios SPF50+",    type:"Sunscreen",  price:"₹1,850",reason:"Pharmaceutical fragrance-free SPF50+ — tested on the most sensitive skin types, zero adverse reactions ever.",                                                             link:"https://www.amazon.in/s?k=La+Roche+Posay+Anthelios" }
+      }
+    }
+  }
+};
+
+// ── Label + icon maps ──────────────────────────────────────
+var SKIN_LABELS    = { oily:'Oily', dry:'Dry', combination:'Combination', sensitive:'Sensitive' };
+var CONCERN_LABELS = { acne:'Acne', glow:'Glow', darkspots:'Dark Spots', daily:'Daily Care' };
+var BUDGET_LABELS  = { low:'Low (₹100–₹500)', medium:'Medium (₹500–₹2,000)', high:'High (₹2,000+)' };
+var PROD_ICONS     = { 'Face Wash':'🧴', 'Moisturizer':'💧', 'Sunscreen':'☀️' };
+var SKIN_ICONS     = { oily:'✨', dry:'🌿', combination:'⚖️', sensitive:'🌸' };
+var CONCERN_ICONS  = { acne:'🎯', glow:'💫', darkspots:'🔬', daily:'🌅' };
+var PROD_COLORS    = { 'Face Wash':'#4f8ef7', 'Moisturizer':'#34b87a', 'Sunscreen':'#f5a623' };
+
+// ── Run Beauty Engine ──────────────────────────────────────
+function runBeautyEngine() {
+  var skin    = document.getElementById('beSkin').value;
+  var concern = document.getElementById('beConcern').value;
+  var budget  = document.getElementById('beBudget').value;
+  var result  = document.getElementById('beautyResult');
+  var btn     = document.querySelector('.beauty-btn');
+
+  if (!skin || !concern || !budget) {
+    result.innerHTML = '<p class="eng-error">&#9888; Please select all 3 options to get your skincare picks.</p>';
+    result.classList.add('be-visible');
+    return;
+  }
+
+  var picks = BEAUTY_DATA[skin] && BEAUTY_DATA[skin][concern] && BEAUTY_DATA[skin][concern][budget];
+
+  if (!picks) {
+    result.innerHTML = '<p class="eng-error">No match found. Try a different combination.</p>';
+    result.classList.add('be-visible');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="eng-spinner"></span> Finding your skincare picks\u2026';
+  btn.classList.add('eng-loading');
+  result.classList.remove('be-visible');
+  result.innerHTML = '';
+
+  setTimeout(function () {
+    var skinLabel    = SKIN_LABELS[skin]       || skin;
+    var concernLabel = CONCERN_LABELS[concern] || concern;
+    var budgetLabel  = BUDGET_LABELS[budget]   || budget;
+
+    var html  = '<div class="be-banner">';
+    html += '<span class="be-banner-eyebrow">&#9733; Best Pick for You</span>';
+    html += '<span class="be-banner-title">Your Complete Skincare Routine</span>';
+    html += '<p class="be-banner-reason">Based on your <strong>' + skinLabel + '</strong> skin, <strong>' + concernLabel + '</strong> concern, and <strong>' + budgetLabel + '</strong> — we analysed the options and made the call. This is your routine.</p>';
+    html += '</div>';
+
+    html += '<div class="be-tags-row">';
+    html += '<span class="eng-rtag">' + SKIN_ICONS[skin]       + ' ' + skinLabel    + ' Skin</span>';
+    html += '<span class="eng-rtag">' + CONCERN_ICONS[concern] + ' ' + concernLabel + '</span>';
+    html += '<span class="eng-rtag">&#128176; ' + budgetLabel + '</span>';
+    html += '</div>';
+
+    html += '<div class="be-cards">';
+    ['facewash','moisturizer','sunscreen'].forEach(function (key, idx) {
+      var p     = picks[key];
+      var icon  = PROD_ICONS[p.type]   || '&#10024;';
+      var color = PROD_COLORS[p.type]  || 'var(--text)';
+      html += '<div class="be-card" style="animation-delay:' + (idx * 0.09) + 's">';
+
+      html += '<div class="be-card-confirm-strip">';
+      html += '<span>&#10003; Best ' + p.type + ' For You</span>';
+      html += '</div>';
+
+      html += '<div class="be-card-strip" style="background:' + color + '">';
+      html += '<span>' + icon + ' ' + p.type + '</span>';
+      html += '</div>';
+
+      html += '<div class="be-card-body">';
+      html += '<div class="be-card-name">' + p.name + '</div>';
+      html += '<div class="be-card-price">' + p.price + '</div>';
+
+      html += '<p class="be-card-context">For <strong>' + skinLabel + '</strong> skin with <strong>' + concernLabel + '</strong> concern:</p>';
+      html += '<p class="be-card-reason">' + p.reason + '</p>';
+
+      html += '<div class="be-final-verdict">';
+      html += '<span class="be-verdict-chip">FINAL DECISION</span>';
+      html += '<p>This is the best ' + p.type + ' for your ' + skinLabel.toLowerCase() + ', ' + concernLabel.toLowerCase() + '-focused skin.</p>';
+      html += '</div>';
+
+      html += '<a class="be-buy-btn" href="' + p.link + '" target="_blank" rel="noopener">Buy Now &#8594;</a>';
+      html += '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '<p class="eng-disclaimer">&#128161; Use all 3 products together for the best possible results.</p>';
+
+    result.innerHTML = html;
+    btn.disabled = false;
+    btn.innerHTML = '<span class="btn-icon">&#10024;</span> Get My Skincare Picks';
+    btn.classList.remove('eng-loading');
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        result.classList.add('be-visible');
+        setTimeout(function () {
+          result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+      });
+    });
+  }, 900);
+}

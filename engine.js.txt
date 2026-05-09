@@ -1,0 +1,859 @@
+// ============================================================
+// NexPick — Decision Engine v1
+// Full data matrix: category × budget × purpose → top 2 picks
+// ============================================================
+
+var ENGINE_DATA = {
+
+  // ── LAPTOPS ──────────────────────────────────────────────
+  laptop: {
+    low: {
+      study: [
+        {
+          name: "Acer Aspire 5 (2024)",
+          price: "₹35,990",
+          icon: "💻",
+          reason: "Lightweight, 8-hour battery, and a full HD display make it the go-to choice for students who need reliability without breaking the bank.",
+          pros: ["8GB RAM + 512GB SSD", "10-hr battery", "Full HD display"],
+          verdict: "Best budget student laptop — no compromises where it counts."
+        },
+        {
+          name: "HP 15s (Intel i3)",
+          price: "₹32,990",
+          icon: "💻",
+          reason: "Proven reliability, fast boot, and a great keyboard. Handles documents, spreadsheets, and video calls effortlessly.",
+          pros: ["Backlit keyboard", "Windows 11 Home", "Fast startup via SSD"],
+          verdict: "Ultra-reliable daily driver for every student."
+        }
+      ],
+      work: [
+        {
+          name: "Lenovo IdeaPad Slim 3 (2024)",
+          price: "₹38,490",
+          icon: "💻",
+          reason: "Slim, professional look with Intel i5 and a fast SSD — handles spreadsheets, emails, and video calls without a sweat.",
+          pros: ["Intel i5 12th Gen", "512GB NVMe SSD", "Thin & light design"],
+          verdict: "Best budget work laptop for professionals."
+        },
+        {
+          name: "HP Pavilion 15",
+          price: "₹41,990",
+          icon: "💻",
+          reason: "HP's Pavilion lineup has always been a workhorse. Great for multitasking, with a solid build quality that lasts years.",
+          pros: ["AMD Ryzen 5", "Full HD IPS display", "Fingerprint reader"],
+          verdict: "Solid, dependable — a true office companion."
+        }
+      ],
+      gaming: [
+        {
+          name: "Lenovo IdeaPad Gaming 3",
+          price: "₹52,990",
+          icon: "🎮",
+          reason: "GTX 1650 GPU handles popular titles like Valorant, GTA V, and FIFA at smooth frame rates — the best entry point into PC gaming.",
+          pros: ["GTX 1650 4GB", "AMD Ryzen 5", "144Hz display"],
+          verdict: "Best entry-level gaming laptop under ₹55k."
+        },
+        {
+          name: "ASUS TUF Gaming F15 (GTX 1650)",
+          price: "₹57,990",
+          icon: "🎮",
+          reason: "MIL-STD-810H durability rating, great thermals, and a 144Hz display — built to handle intense gaming sessions reliably.",
+          pros: ["144Hz display", "Military-grade build", "Efficient cooling"],
+          verdict: "Toughest gaming laptop at this price — built to last."
+        }
+      ],
+      productivity: [
+        {
+          name: "Acer Swift 3",
+          price: "₹42,990",
+          icon: "💻",
+          reason: "Featherlight at 1.2kg, blazing-fast SSD, and all-day battery — the productivity machine you can take anywhere.",
+          pros: ["1.2kg ultralight", "AMD Ryzen 5", "12-hr battery"],
+          verdict: "Best lightweight productivity laptop on a budget."
+        },
+        {
+          name: "HP 15s (Ryzen 5)",
+          price: "₹39,990",
+          icon: "💻",
+          reason: "Multi-tasking king at its price. Handles dozens of browser tabs, Office apps, and Zoom calls without slowing down.",
+          pros: ["AMD Ryzen 5", "8GB RAM", "Fast SSD boot"],
+          verdict: "Pure productivity at an unbeatable price."
+        }
+      ]
+    },
+    medium: {
+      study: [
+        {
+          name: "Lenovo IdeaPad Slim 5 (OLED)",
+          price: "₹58,990",
+          icon: "💻",
+          reason: "OLED display is stunning for reading, great battery life, and the Ryzen 7 handles even coding and light video editing.",
+          pros: ["OLED display", "AMD Ryzen 7", "Up to 16GB RAM"],
+          verdict: "Best mid-range laptop for serious students."
+        },
+        {
+          name: "ASUS VivoBook 16X",
+          price: "₹54,990",
+          icon: "💻",
+          reason: "Big 16-inch screen for comfortable studying, fast processor, and a premium build that feels way above its price.",
+          pros: ["16-inch display", "Intel i5 13th Gen", "Backlit keyboard"],
+          verdict: "Biggest screen, best study experience at mid-range."
+        }
+      ],
+      work: [
+        {
+          name: "MacBook Air M1",
+          price: "₹74,990",
+          icon: "💻",
+          reason: "The M1 chip is still a benchmark-beater. Fanless, silent, all-day battery, and the best trackpad ever made. A professional tool.",
+          pros: ["Apple M1 chip", "18-hr battery", "Silent fanless design"],
+          verdict: "Best work laptop at this price — period."
+        },
+        {
+          name: "Dell Inspiron 15 (i5 13th Gen)",
+          price: "₹62,990",
+          icon: "💻",
+          reason: "Dell's build quality and after-sales support are legendary. Handles all work tasks with a bright display and full port selection.",
+          pros: ["Intel i5 13th Gen", "Thunderbolt port", "Anti-glare display"],
+          verdict: "Most reliable Windows work laptop mid-range."
+        }
+      ],
+      gaming: [
+        {
+          name: "ASUS TUF Gaming F15 (RTX 3050)",
+          price: "₹71,990",
+          icon: "🎮",
+          reason: "RTX 3050 unlocks ray tracing and DLSS — a serious step up in gaming performance. 144Hz display makes every game buttery smooth.",
+          pros: ["RTX 3050 4GB", "144Hz 1080p", "MIL-SPEC durability"],
+          verdict: "Best gaming upgrade at this price point."
+        },
+        {
+          name: "Lenovo LOQ 15 (RTX 3050)",
+          price: "₹68,990",
+          icon: "🎮",
+          reason: "Lenovo's newest gaming line delivers exceptional performance-per-rupee with smart thermal management and a crisp 1080p panel.",
+          pros: ["RTX 3050", "Legion Coldfront cooling", "165Hz display"],
+          verdict: "Smartest mid-range gaming laptop in 2024."
+        }
+      ],
+      productivity: [
+        {
+          name: "MacBook Air M2",
+          price: "₹94,990",
+          icon: "💻",
+          reason: "The M2 chip handles everything — video editing, code compilation, design — while lasting 18 hours on a single charge. Unmatched.",
+          pros: ["Apple M2 chip", "18-hr battery", "Liquid Retina display"],
+          verdict: "The ultimate productivity machine. Worth every rupee."
+        },
+        {
+          name: "Dell XPS 13 (i7)",
+          price: "₹89,990",
+          icon: "💻",
+          reason: "Compact powerhouse with an InfinityEdge display and Intel i7. Preferred by professionals who demand both beauty and raw power.",
+          pros: ["InfinityEdge display", "Intel i7 13th Gen", "Premium aluminum build"],
+          verdict: "Most premium Windows productivity laptop."
+        }
+      ]
+    },
+    high: {
+      study: [
+        {
+          name: "MacBook Air M3",
+          price: "₹1,14,990",
+          icon: "💻",
+          reason: "M3 chip, 18-hour battery, and a gorgeous Liquid Retina display. The best premium laptop for students who want it to last 5+ years.",
+          pros: ["Apple M3 chip", "18-hr battery", "Up to 24GB unified memory"],
+          verdict: "Best premium student laptop — future-proof for years."
+        },
+        {
+          name: "ASUS ZenBook 14 OLED",
+          price: "₹89,990",
+          icon: "💻",
+          reason: "OLED panel with true blacks, Intel Ultra 5, and an elegant design. Study-worthy clarity and performance in a slim package.",
+          pros: ["2.8K OLED display", "Intel Core Ultra 5", "Under 1.4kg"],
+          verdict: "Best premium Windows laptop for students."
+        }
+      ],
+      work: [
+        {
+          name: "MacBook Pro M3",
+          price: "₹1,69,990",
+          icon: "💻",
+          reason: "The M3 Pro chip is a desktop-class processor in a laptop. For developers, designers, and editors — this is the professional standard.",
+          pros: ["Apple M3 Pro chip", "ProMotion 120Hz display", "22-hr battery"],
+          verdict: "The definitive professional work laptop."
+        },
+        {
+          name: "Dell XPS 15 (i9)",
+          price: "₹1,49,990",
+          icon: "💻",
+          reason: "15.6-inch OLED display, Intel i9, and 32GB RAM. The Windows benchmark for creative professionals who need raw power.",
+          pros: ["OLED 3.5K display", "Intel i9 13th Gen", "RTX 4060 GPU"],
+          verdict: "Best premium Windows laptop for creative work."
+        }
+      ],
+      gaming: [
+        {
+          name: "ASUS ROG Strix G16 (RTX 4070)",
+          price: "₹1,49,990",
+          icon: "🎮",
+          reason: "RTX 4070 and a 240Hz display make this a true 1080p gaming beast. Handles every AAA title at ultra settings without compromise.",
+          pros: ["RTX 4070 8GB", "240Hz QHD display", "Per-key RGB keyboard"],
+          verdict: "Absolute best gaming laptop under ₹1.5L."
+        },
+        {
+          name: "Lenovo Legion Pro 5 (RTX 4070)",
+          price: "₹1,39,990",
+          icon: "🎮",
+          reason: "Legion's cold front cooling keeps temps low even during marathon sessions. RTX 4070 and Ryzen 7 is a match made for gaming heaven.",
+          pros: ["AMD Ryzen 7 7745HX", "RTX 4070", "180W power delivery"],
+          verdict: "Best thermal management + performance combo."
+        }
+      ],
+      productivity: [
+        {
+          name: "MacBook Pro M3 Pro",
+          price: "₹1,99,990",
+          icon: "💻",
+          reason: "When you work with huge files, long builds, or 4K video — nothing matches the M3 Pro. It's a supercomputer in a 1.5kg chassis.",
+          pros: ["M3 Pro chip", "36GB unified memory option", "Thunderbolt 4 × 3"],
+          verdict: "No faster laptop on the planet for serious work."
+        },
+        {
+          name: "ASUS ProArt Studiobook 16",
+          price: "₹1,59,990",
+          icon: "💻",
+          reason: "Built for creators — colour-accurate OLED, ASUS Dial control knob, and RTX 4070. Designed for Photoshop, Premiere, and Blender.",
+          pros: ["OLED 4K display", "ASUS Dial creative tool", "RTX 4070"],
+          verdict: "Best laptop for designers and creative pros."
+        }
+      ]
+    }
+  },
+
+  // ── COURSES ───────────────────────────────────────────────
+  course: {
+    low: {
+      study: [
+        {
+          name: "Khan Academy",
+          price: "Free forever",
+          icon: "📚",
+          reason: "World-class Maths, Science, and Humanities taught visually. Used by millions of students globally — no ads, no fees, ever.",
+          pros: ["100% free", "JEE & board-aligned content", "Practice tests included"],
+          verdict: "Best free study platform — no comparison."
+        },
+        {
+          name: "Physics Wallah (YouTube)",
+          price: "Free",
+          icon: "🎥",
+          reason: "Alakh Pandey's teaching style breaks down complex JEE/NEET concepts into simple, memorable explanations. India's #1 study channel.",
+          pros: ["JEE + NEET coverage", "Hindi & English", "10M+ subscribers"],
+          verdict: "India's most trusted free exam prep channel."
+        }
+      ],
+      work: [
+        {
+          name: "Google Digital Garage",
+          price: "Free + Certificate",
+          icon: "🎓",
+          reason: "Google-certified digital marketing and career skills. Employers recognise Google certifications — valuable for any job seeker.",
+          pros: ["Google certificate", "Self-paced", "Covers SEO, analytics, ads"],
+          verdict: "Best free professional certificate for work skills."
+        },
+        {
+          name: "LinkedIn Learning (Trial)",
+          price: "Free 30-day trial",
+          icon: "💼",
+          reason: "Access 16,000+ professional courses free for a month. Complete a course and add it directly to your LinkedIn profile.",
+          pros: ["16,000+ courses", "LinkedIn profile badge", "Expert instructors"],
+          verdict: "Most career-relevant free course platform."
+        }
+      ],
+      gaming: [
+        {
+          name: "Unity Learn",
+          price: "Free",
+          icon: "🎮",
+          reason: "Official Unity tutorials from beginner to advanced. Build real games as you learn — the best hands-on game dev path available for free.",
+          pros: ["Official Unity content", "Project-based learning", "Active community"],
+          verdict: "Best free path to becoming a game developer."
+        },
+        {
+          name: "CS50's Intro to Game Dev (edX)",
+          price: "Free to audit",
+          icon: "🎮",
+          reason: "Harvard's own game development course, free to audit. Covers Lua, Unity, and core game design principles with real projects.",
+          pros: ["Harvard curriculum", "Unity + Lua coverage", "Certificate available"],
+          verdict: "Best structured free game dev course available."
+        }
+      ],
+      productivity: [
+        {
+          name: "Ali Abdaal (YouTube)",
+          price: "Free",
+          icon: "⚡",
+          reason: "The world's most popular productivity YouTuber. Evidence-based techniques on studying, time management, and building systems.",
+          pros: ["5M+ subscribers", "Evidence-based methods", "Weekly new content"],
+          verdict: "Best free productivity education on the internet."
+        },
+        {
+          name: "Thomas Frank (YouTube)",
+          price: "Free",
+          icon: "⚡",
+          reason: "Deep dives into Notion, task management, and focus techniques. His Notion templates alone are worth millions of views.",
+          pros: ["Notion expertise", "Study skills focus", "Free templates"],
+          verdict: "Best free channel for students and self-learners."
+        }
+      ]
+    },
+    medium: {
+      study: [
+        {
+          name: "Udemy (Any Subject)",
+          price: "₹449 – ₹1,499",
+          icon: "🎓",
+          reason: "Thousands of courses on every subject imaginable at sale prices. Lifetime access means you learn at your own pace — forever.",
+          pros: ["Lifetime access", "Certificate of completion", "Frequent ₹449 sales"],
+          verdict: "Best value paid learning platform — bar none."
+        },
+        {
+          name: "Coursera (Guided Projects)",
+          price: "₹800 – ₹2,000",
+          icon: "🎓",
+          reason: "University-grade courses from Stanford, Google, IBM. Guided projects give you a portfolio piece alongside your certificate.",
+          pros: ["Top university courses", "Portfolio projects", "Shareable certificate"],
+          verdict: "Most credible paid course for serious learners."
+        }
+      ],
+      work: [
+        {
+          name: "LinkedIn Learning",
+          price: "₹1,499/month",
+          icon: "💼",
+          reason: "Courses map directly to in-demand job skills. Recruiters can see your completed courses — it actively helps your career.",
+          pros: ["Skills show on LinkedIn", "16,000+ courses", "Offline viewing"],
+          verdict: "Best career investment for working professionals."
+        },
+        {
+          name: "Skillshare",
+          price: "₹1,200/month",
+          icon: "🎨",
+          reason: "Unlimited access to creative and business courses. Great for freelancers — learn design, marketing, and writing in one platform.",
+          pros: ["Unlimited access", "Project-based", "Great for freelancers"],
+          verdict: "Best all-in-one platform for freelance skills."
+        }
+      ],
+      gaming: [
+        {
+          name: "Udemy Game Dev Bundle",
+          price: "₹499 (on sale)",
+          icon: "🎮",
+          reason: "GameDev.tv courses on Udemy are the gold standard — Unity, Unreal, and Blender courses bundled at incredible sale prices.",
+          pros: ["Unity + Unreal + Blender", "Project-based", "Lifetime access"],
+          verdict: "Best paid game development course package."
+        },
+        {
+          name: "Pluralsight (Tech path)",
+          price: "₹1,700/month",
+          icon: "🎮",
+          reason: "Skill assessments, learning paths, and expert instructors. Ideal for developers wanting to move into gaming or simulation tech.",
+          pros: ["Skill assessments", "Expert instructors", "Learning paths"],
+          verdict: "Best structured path for technical game developers."
+        }
+      ],
+      productivity: [
+        {
+          name: "Notion Masterclass (Udemy)",
+          price: "₹499",
+          icon: "⚡",
+          reason: "Learn to build a complete productivity system in Notion. Task management, journaling, knowledge base — all in one tool.",
+          pros: ["Complete system setup", "Templates included", "Lifetime access"],
+          verdict: "Best course to build your productivity OS."
+        },
+        {
+          name: "Deep Work by Cal Newport (Audiobook)",
+          price: "₹600",
+          icon: "⚡",
+          reason: "The definitive book on focused, distraction-free work. Changed how millions of professionals approach their careers.",
+          pros: ["Mindset shift", "Practical framework", "Timeless principles"],
+          verdict: "Best productivity book — will change how you work."
+        }
+      ]
+    },
+    high: {
+      study: [
+        {
+          name: "edX MicroMasters Program",
+          price: "₹15,000 – ₹60,000",
+          icon: "🎓",
+          reason: "University credit-bearing programs from MIT, Harvard, and Berkeley. Can count toward actual university degrees in some cases.",
+          pros: ["University credit eligible", "MIT / Harvard / Berkeley", "Verifiable certificate"],
+          verdict: "Most credible premium credential for serious students."
+        },
+        {
+          name: "Coursera Specialization",
+          price: "₹3,000 – ₹12,000",
+          icon: "🎓",
+          reason: "6–8 course deep dives with hands-on projects and a professional certificate. Recognized by Google, IBM, Meta, and Amazon HR teams.",
+          pros: ["Top employer recognition", "Capstone project", "Shareable to LinkedIn"],
+          verdict: "Best ROI premium course for career changers."
+        }
+      ],
+      work: [
+        {
+          name: "Coursera Professional Certificate",
+          price: "₹10,000 – ₹30,000",
+          icon: "💼",
+          reason: "Google, Meta, IBM, and Amazon's own certificate programs. These are the exact skills these companies hire for — with proof.",
+          pros: ["Issued by Google/Meta/IBM", "Job-ready curriculum", "Hiring pipeline access"],
+          verdict: "Best premium credential to land a high-paying job."
+        },
+        {
+          name: "MasterClass",
+          price: "₹4,500/year",
+          icon: "💼",
+          reason: "Learn storytelling from Neil Gaiman, negotiation from Chris Voss, leadership from Bob Iger. Soft skills taught by the world's best.",
+          pros: ["World-class instructors", "Cinematic production", "All topics included"],
+          verdict: "Best for leadership, creativity, and soft skills."
+        }
+      ],
+      gaming: [
+        {
+          name: "Game Design Bootcamp (Springboard)",
+          price: "₹3,00,000+",
+          icon: "🎮",
+          reason: "Mentored, full-time game design program with job placement support. For those who want a career in gaming, not just a hobby.",
+          pros: ["1-on-1 mentorship", "Portfolio building", "Job guarantee"],
+          verdict: "Best path to a professional game design career."
+        },
+        {
+          name: "Pluralsight Premium",
+          price: "₹2,000/month",
+          icon: "🎮",
+          reason: "Skill assessments show exactly what to learn. Expert paths for game engine developers, 3D artists, and rendering engineers.",
+          pros: ["Skill IQ assessment", "Expert-led paths", "Offline access"],
+          verdict: "Best premium platform for technical game dev skills."
+        }
+      ],
+      productivity: [
+        {
+          name: "MasterClass Annual",
+          price: "₹4,500/year",
+          icon: "⚡",
+          reason: "Productivity, leadership, writing, and decision-making — taught by the world's top performers. Unlimited access all year.",
+          pros: ["World-class instructors", "Unlimited access", "Offline downloads"],
+          verdict: "Best premium investment for high-performance skills."
+        },
+        {
+          name: "Ness Labs (Anne-Laure Le Cunff)",
+          price: "₹8,000/year",
+          icon: "⚡",
+          reason: "Science-backed productivity, learning, and creativity community. Weekly content, live sessions, and a thoughtful member network.",
+          pros: ["Science-backed methods", "Live sessions", "Private community"],
+          verdict: "Best premium productivity community for thinkers."
+        }
+      ]
+    }
+  },
+
+  // ── TOOLS ─────────────────────────────────────────────────
+  tool: {
+    low: {
+      study: [
+        {
+          name: "Notion (Free Plan)",
+          price: "Free",
+          icon: "📝",
+          reason: "Build your complete study system — notes, flashcards, project tracker, reading list — all in one beautiful workspace.",
+          pros: ["All-in-one workspace", "Rich templates", "Sync across devices"],
+          verdict: "Best free study organisation tool available."
+        },
+        {
+          name: "Anki",
+          price: "Free",
+          icon: "🃏",
+          reason: "Spaced repetition proven by neuroscience to maximise memorisation. Used by medical students worldwide to learn thousands of facts.",
+          pros: ["Science-backed retention", "Free flashcard system", "Huge community decks"],
+          verdict: "Best free tool for memorisation and exam prep."
+        }
+      ],
+      work: [
+        {
+          name: "Google Workspace (Free)",
+          price: "Free",
+          icon: "🔧",
+          reason: "Gmail, Docs, Sheets, Slides, Meet — the complete professional suite. Real-time collaboration with anyone, anywhere.",
+          pros: ["15GB storage", "Real-time collaboration", "Works on any device"],
+          verdict: "Best free tool suite for every professional."
+        },
+        {
+          name: "Trello (Free)",
+          price: "Free",
+          icon: "📋",
+          reason: "Visual Kanban boards to manage any project. Drag cards from To Do → Doing → Done. Teams of any size can collaborate for free.",
+          pros: ["Visual project boards", "Team collaboration", "Unlimited cards free"],
+          verdict: "Simplest free project management tool."
+        }
+      ],
+      gaming: [
+        {
+          name: "Discord (Free)",
+          price: "Free",
+          icon: "🎮",
+          reason: "The gaming community hub. Voice chat with zero latency, game overlay, and servers for every game. Non-negotiable for gamers.",
+          pros: ["Near-zero latency voice", "Game overlay", "Massive communities"],
+          verdict: "Every gamer needs this — no exceptions."
+        },
+        {
+          name: "OBS Studio",
+          price: "Free",
+          icon: "🎮",
+          reason: "Professional-grade streaming and recording. Used by top streamers on Twitch and YouTube. Open source, powerful, and free.",
+          pros: ["Professional streaming", "Scene mixing", "YouTube + Twitch ready"],
+          verdict: "Best free tool to start your streaming journey."
+        }
+      ],
+      productivity: [
+        {
+          name: "Todoist (Free)",
+          price: "Free",
+          icon: "✅",
+          reason: "The cleanest task manager ever built. Natural language input, priority levels, and beautiful apps on every platform.",
+          pros: ["Natural language tasks", "Cross-platform", "Smart scheduling"],
+          verdict: "Best free task manager — incredibly polished."
+        },
+        {
+          name: "Obsidian",
+          price: "Free for personal use",
+          icon: "🧠",
+          reason: "Your notes as a knowledge graph. Build a second brain that links ideas together. Markdown-based, offline-first, and yours forever.",
+          pros: ["Knowledge graph view", "Fully offline", "Plugins ecosystem"],
+          verdict: "Best free tool for building a second brain."
+        }
+      ]
+    },
+    medium: {
+      study: [
+        {
+          name: "Notion AI (Plus Plan)",
+          price: "₹800/month",
+          icon: "📝",
+          reason: "AI that summarises your notes, generates study guides, and answers questions from your own documents. Study smarter, not harder.",
+          pros: ["AI summaries", "Auto-generate flashcards", "All Notion features"],
+          verdict: "Best AI-powered study tool for serious students."
+        },
+        {
+          name: "Readwise + Reader",
+          price: "₹700/month",
+          icon: "📚",
+          reason: "Highlight anything from books, articles, Twitter, and PDFs. Readwise resurfaces your highlights using spaced repetition so you never forget.",
+          pros: ["Spaced repetition", "Highlights from everywhere", "Daily review"],
+          verdict: "Best tool for reading more and forgetting less."
+        }
+      ],
+      work: [
+        {
+          name: "Notion (Team Plan)",
+          price: "₹800/member/month",
+          icon: "🔧",
+          reason: "The ultimate team workspace. Wikis, project trackers, meeting notes, and databases — all connected. Replaces 5 other tools.",
+          pros: ["Team wikis", "Unlimited pages", "API integrations"],
+          verdict: "Best all-in-one team workspace for growing teams."
+        },
+        {
+          name: "Loom",
+          price: "₹800/month",
+          icon: "🎥",
+          reason: "Record your screen and face, share a link — no more hour-long meetings. Async communication that saves your team hours every week.",
+          pros: ["Async video messages", "Auto-transcription", "Viewer reactions"],
+          verdict: "Best tool to eliminate unnecessary meetings."
+        }
+      ],
+      gaming: [
+        {
+          name: "Discord Nitro",
+          price: "₹650/month",
+          icon: "🎮",
+          reason: "Higher video quality, animated avatar, custom server boosts, and file uploads up to 500MB. The premium gaming social experience.",
+          pros: ["HD streaming", "Animated profile", "2 free server boosts"],
+          verdict: "Best upgrade for serious gamers on Discord."
+        },
+        {
+          name: "GeForce Experience + Shadowplay",
+          price: "Free with RTX GPU",
+          icon: "🎮",
+          reason: "Instant replay captures your best gaming moments automatically — no performance hit, no missed clips.",
+          pros: ["Instant replay", "Zero performance hit", "Auto highlight detection"],
+          verdict: "Best tool to capture and share gaming highlights."
+        }
+      ],
+      productivity: [
+        {
+          name: "Notion AI",
+          price: "₹800/month",
+          icon: "⚡",
+          reason: "Write faster, summarise documents, brainstorm ideas, and manage projects — all inside Notion with AI deeply integrated.",
+          pros: ["AI writing assistant", "Document summaries", "Integrated workspace"],
+          verdict: "Best AI productivity tool — replaces multiple apps."
+        },
+        {
+          name: "Zapier (Starter)",
+          price: "₹1,500/month",
+          icon: "⚡",
+          reason: "Automate repetitive tasks between 5,000+ apps. Set it once and save hours every week without writing a single line of code.",
+          pros: ["5,000+ app integrations", "No-code automation", "Saves hours weekly"],
+          verdict: "Best tool to automate away boring repetitive work."
+        }
+      ]
+    },
+    high: {
+      study: [
+        {
+          name: "Grammarly Premium",
+          price: "₹5,000/year",
+          icon: "✍️",
+          reason: "AI that checks grammar, rewrites sentences for clarity, catches plagiarism, and matches your academic writing style. A must for researchers.",
+          pros: ["Advanced AI rewriting", "Plagiarism checker", "Academic style"],
+          verdict: "Best premium writing tool for students and researchers."
+        },
+        {
+          name: "Roam Research",
+          price: "₹1,200/month",
+          icon: "🧠",
+          reason: "The thinking tool of choice for academics, researchers, and writers. Bidirectional links make every note instantly connected to related ideas.",
+          pros: ["Bidirectional links", "Daily notes", "Graph overview"],
+          verdict: "Best premium tool for deep research and writing."
+        }
+      ],
+      work: [
+        {
+          name: "Microsoft 365 Business",
+          price: "₹660/month",
+          icon: "🔧",
+          reason: "Word, Excel, PowerPoint, Teams, OneDrive, and Outlook — the industry standard suite. Required in most professional environments.",
+          pros: ["Industry standard", "1TB OneDrive", "Teams included"],
+          verdict: "The non-negotiable professional work suite."
+        },
+        {
+          name: "Notion + Make (Integromat)",
+          price: "₹2,000/month",
+          icon: "⚡",
+          reason: "Notion as your system of record, Make.com automating everything around it. Together they form a complete business operating system.",
+          pros: ["Full automation", "Visual workflow builder", "1,000+ integrations"],
+          verdict: "Best premium productivity stack for solopreneurs."
+        }
+      ],
+      gaming: [
+        {
+          name: "NVIDIA GeForce Now (Ultimate)",
+          price: "₹999/month",
+          icon: "🎮",
+          reason: "RTX 4080-class cloud gaming on any device — even a budget laptop. Play AAA games at 4K, 120fps without buying expensive hardware.",
+          pros: ["RTX 4080 cloud GPU", "4K 120fps streaming", "Works on any device"],
+          verdict: "Best way to play AAA games without a gaming PC."
+        },
+        {
+          name: "Xbox Game Pass Ultimate",
+          price: "₹599/month",
+          icon: "🎮",
+          reason: "100+ games available day one, cloud gaming included, and EA Play library access. The best value in gaming, period.",
+          pros: ["Day-one new games", "Cloud gaming", "EA Play included"],
+          verdict: "Best value gaming subscription — nothing comes close."
+        }
+      ],
+      productivity: [
+        {
+          name: "Notion AI + Zapier Pro",
+          price: "₹4,000/month",
+          icon: "⚡",
+          reason: "The complete automated productivity stack. AI drafts, organises, and summarises. Zapier syncs and automates across your whole business.",
+          pros: ["Full AI + automation", "No manual data entry", "Scales with your work"],
+          verdict: "Best premium productivity stack for power users."
+        },
+        {
+          name: "Superhuman (Email)",
+          price: "₹2,500/month",
+          icon: "⚡",
+          reason: "The fastest email client ever made. Keyboard-driven, AI-summarised threads, and a read-status tracker. Used by top executives globally.",
+          pros: ["AI email summaries", "Fastest email client", "Read status tracking"],
+          verdict: "Best premium email tool for high-output professionals."
+        }
+      ]
+    }
+  }
+};
+
+// ── Category icon map ──────────────────────────────────────
+var CAT_ICONS    = { laptop: "💻", course: "🎓", tool: "🔧", "": "" };
+var BUDGET_ICONS = { low: "💚", medium: "💛", high: "💜", "": "" };
+var PURPOSE_ICONS = { study: "📚", work: "💼", gaming: "🎮", productivity: "⚡", "": "" };
+
+// ── Pill state updater ─────────────────────────────────────
+function updatePills() {
+  var cat     = document.getElementById("engCat").value;
+  var budget  = document.getElementById("engBudget").value;
+  var purpose = document.getElementById("engPurpose").value;
+
+  setPill("pill1", cat !== "",     CAT_ICONS[cat]     || "1", cat     ? pillLabel(cat)     : "Category");
+  setPill("pill2", budget !== "",  BUDGET_ICONS[budget] || "2", budget  ? pillLabel(budget)  : "Budget");
+  setPill("pill3", purpose !== "", PURPOSE_ICONS[purpose] || "3", purpose ? pillLabel(purpose) : "Purpose");
+}
+
+function pillLabel(val) {
+  var labels = {
+    laptop: "Laptop", course: "Course", tool: "Tool",
+    low: "Low", medium: "Medium", high: "High",
+    study: "Study", work: "Work", gaming: "Gaming", productivity: "Productivity"
+  };
+  return labels[val] || val;
+}
+
+function setPill(id, on, icon, label) {
+  var el = document.getElementById(id);
+  if (on) {
+    el.classList.add("active");
+    el.querySelector(".pill-num").textContent   = icon;
+    el.querySelector(".pill-label").textContent = label;
+  } else {
+    el.classList.remove("active");
+    el.querySelector(".pill-num").textContent   = id.replace("pill", "");
+    el.querySelector(".pill-label").textContent = ["Category", "Budget", "Purpose"][+id.replace("pill","") - 1];
+  }
+}
+
+function setActive(id, on) {
+  var el = document.getElementById(id);
+  if (on) el.classList.add("active");
+  else el.classList.remove("active");
+}
+
+// ── Prefill from category cards ────────────────────────────
+function prefillEngine(cat, budget, purpose) {
+  document.getElementById("engCat").value     = cat;
+  document.getElementById("engBudget").value  = budget;
+  document.getElementById("engPurpose").value = purpose;
+  updatePills();
+  document.getElementById("engine").scrollIntoView({ behavior: "smooth" });
+  setTimeout(runEngine, 600);
+}
+
+// ── Main engine logic ──────────────────────────────────────
+function runEngine() {
+  var cat     = document.getElementById("engCat").value;
+  var budget  = document.getElementById("engBudget").value;
+  var purpose = document.getElementById("engPurpose").value;
+  var result  = document.getElementById("engineResult");
+  var btn     = document.querySelector(".engine-btn");
+
+  // Validate
+  if (!cat || !budget || !purpose) {
+    result.innerHTML = '<p class="eng-error">&#9888; Please select all 3 options above to get your recommendation.</p>';
+    result.classList.add("eng-visible");
+    return;
+  }
+
+  // Lookup
+  var picks = (ENGINE_DATA[cat] &&
+               ENGINE_DATA[cat][budget] &&
+               ENGINE_DATA[cat][budget][purpose]) || null;
+
+  if (!picks || picks.length === 0) {
+    result.innerHTML = '<p class="eng-error">No match found for this combination. Try adjusting your selections.</p>';
+    result.classList.add("eng-visible");
+    return;
+  }
+
+  // ── Loading state ──
+  btn.disabled = true;
+  btn.innerHTML = '<span class="eng-spinner"></span> Finding your best pick…';
+  btn.classList.add("eng-loading");
+  result.classList.remove("eng-visible");
+  result.innerHTML = "";
+
+  setTimeout(function () {
+    // ── Build result HTML ──
+    var catIcon      = CAT_ICONS[cat] || "";
+    var budgetLabel  = { low: "low budget", medium: "medium budget", high: "high budget" }[budget] || budget;
+    var purposeLabel = { study: "study", work: "work", gaming: "gaming", productivity: "productivity" }[purpose] || purpose;
+    var catLabel     = { laptop: "laptop", course: "course", tool: "tool" }[cat] || cat;
+
+    var html = '<div class="eng-decision-banner">';
+    html += '<span class="eng-decision-label">Best Pick for You</span>';
+    html += '<p class="eng-decision-reason">Based on your ' + budgetLabel + ' and ' + purposeLabel + ' needs &mdash; we analysed the options and made the call.</p>';
+    html += '</div>';
+
+    html += '<div class="eng-result-tags-row">';
+    html += '<span class="eng-rtag">' + catIcon + ' ' + pillLabel(cat) + '</span>';
+    html += '<span class="eng-rtag">' + BUDGET_ICONS[budget] + ' ' + pillLabel(budget) + ' Budget</span>';
+    html += '<span class="eng-rtag">' + PURPOSE_ICONS[purpose] + ' ' + pillLabel(purpose) + '</span>';
+    html += '</div>';
+
+    html += '<div class="eng-cards">';
+
+    picks.forEach(function (pick, i) {
+      var isTop = (i === 0);
+      html += '<div class="eng-card' + (isTop ? ' eng-top' : ' eng-alt') + '">';
+
+      if (isTop) {
+        html += '<div class="eng-top-strip">';
+        html += '<span class="eng-badge-inline">&#11088; #1 Best Choice</span>';
+        html += '</div>';
+        html += '<div class="eng-confidence-bar">';
+        html += '<span class="eng-confidence-text">This is the best choice based on your needs.</span>';
+        html += '</div>';
+      }
+
+      html += '<div class="eng-card-body">';
+      html += '<div class="eng-card-head">';
+      html += '<span class="eng-card-icon">' + pick.icon + '</span>';
+      html += '<div class="eng-card-title-block">';
+      html += '<div class="eng-card-name">' + pick.name + '</div>';
+      html += '<div class="eng-card-price">' + pick.price + '</div>';
+      html += '</div>';
+      html += '</div>';
+
+      html += '<p class="eng-card-reason">' + pick.reason + '</p>';
+
+      if (pick.pros && pick.pros.length) {
+        html += '<ul class="eng-pros">';
+        pick.pros.forEach(function (p) {
+          html += '<li>&#10003;&nbsp;' + p + '</li>';
+        });
+        html += '</ul>';
+      }
+
+      if (isTop) {
+        html += '<div class="eng-final-verdict">';
+        html += '<span class="eng-final-verdict-chip">&#127942; Final Decision</span>';
+        html += '<p class="eng-final-verdict-text">' + pick.verdict + '</p>';
+        html += '</div>';
+      } else {
+        html += '<div class="eng-verdict eng-verdict-alt">';
+        html += '<span class="eng-verdict-label">Runner-Up</span>';
+        html += pick.verdict;
+        html += '</div>';
+      }
+
+      html += '</div>';
+      html += '</div>';
+    });
+
+    html += '</div>';
+    html += '<p class="eng-disclaimer">&#128161; Use the AI Assistant below for a deeper personalised search.</p>';
+
+    result.innerHTML = html;
+
+    // Reset button
+    btn.disabled = false;
+    btn.innerHTML = '<span class="btn-icon">&#127775;</span> Get My Best Pick';
+    btn.classList.remove("eng-loading");
+
+    // Trigger fade-in
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        result.classList.add("eng-visible");
+      });
+    });
+  }, 900);
+}
